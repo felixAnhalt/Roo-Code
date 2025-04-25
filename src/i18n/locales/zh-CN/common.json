@@ -88,6 +88,8 @@
 	},
 	"input": {
 		"task_prompt": "让Roo做什么？",
-		"task_placeholder": "在这里输入任务"
+		"task_placeholder": "在这里输入任务",
+		"diff.autoFocus.label": "在显示文件更改时自动聚焦差异标签页",
+		"diff.autoFocus.description": "禁用后，差异标签页将在后台打开，不会抢占焦点。"
 	}
 }

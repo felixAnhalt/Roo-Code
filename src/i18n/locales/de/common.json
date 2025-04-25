@@ -88,6 +88,8 @@
 	},
 	"input": {
 		"task_prompt": "Was soll Roo tun?",
-		"task_placeholder": "Gib deine Aufgabe hier ein"
+		"task_placeholder": "Gib deine Aufgabe hier ein",
+		"diff.autoFocus.label": "Diff-Tab beim Anzeigen von Dateiänderungen automatisch fokussieren",
+		"diff.autoFocus.description": "Wenn deaktiviert, wird der Diff-Tab im Hintergrund geöffnet und stiehlt nicht den Fokus."
 	}
 }
