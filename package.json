@@ -314,7 +314,7 @@
 					"default": "",
 					"description": "%settings.customStoragePath.description%"
 				},
-				"roo-cline.diffView.autoFocus": {
+				"roo-cline.diffViewAutoFocus": {
 					"type": "boolean",
 					"default": true,
 					"description": "Automatically focus the diff tab when showing file changes. If false, the diff tab will open in the background."

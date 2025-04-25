@@ -1153,6 +1153,7 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 			ttsEnabled,
 			ttsSpeed,
 			diffEnabled,
+			diffViewAutoFocus,
 			enableCheckpoints,
 			taskHistory,
 			soundVolume,
@@ -1231,6 +1232,7 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 			ttsEnabled: ttsEnabled ?? false,
 			ttsSpeed: ttsSpeed ?? 1.0,
 			diffEnabled: diffEnabled ?? true,
+			diffViewAutoFocus: diffViewAutoFocus ?? true,
 			enableCheckpoints: enableCheckpoints ?? true,
 			shouldShowAnnouncement:
 				telemetrySetting !== "unset" && lastShownAnnouncementId !== this.latestAnnouncementId,
@@ -1328,6 +1330,7 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 			ttsEnabled: stateValues.ttsEnabled ?? false,
 			ttsSpeed: stateValues.ttsSpeed ?? 1.0,
 			diffEnabled: stateValues.diffEnabled ?? true,
+			diffViewAutoFocus: stateValues.diffViewAutoFocus ?? false,
 			enableCheckpoints: stateValues.enableCheckpoints ?? true,
 			soundVolume: stateValues.soundVolume,
 			browserViewportSize: stateValues.browserViewportSize ?? "900x600",

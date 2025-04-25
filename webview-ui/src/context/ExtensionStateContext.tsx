@@ -48,6 +48,7 @@ export interface ExtensionStateContextType extends ExtensionState {
 	setTtsEnabled: (value: boolean) => void
 	setTtsSpeed: (value: number) => void
 	setDiffEnabled: (value: boolean) => void
+	setDiffViewAutoFocus: (value: boolean) => void
 	setEnableCheckpoints: (value: boolean) => void
 	setBrowserViewportSize: (value: string) => void
 	setFuzzyMatchThreshold: (value: number) => void
@@ -291,6 +292,7 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 		setTtsEnabled: (value) => setState((prevState) => ({ ...prevState, ttsEnabled: value })),
 		setTtsSpeed: (value) => setState((prevState) => ({ ...prevState, ttsSpeed: value })),
 		setDiffEnabled: (value) => setState((prevState) => ({ ...prevState, diffEnabled: value })),
+		setDiffViewAutoFocus: (value) => setState((prevState) => ({ ...prevState, diffViewAutoFocus: value })),
 		setEnableCheckpoints: (value) => setState((prevState) => ({ ...prevState, enableCheckpoints: value })),
 		setBrowserViewportSize: (value: string) =>
 			setState((prevState) => ({ ...prevState, browserViewportSize: value })),
