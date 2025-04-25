@@ -1,4 +1,5 @@
 import * as vscode from "vscode"
+import { TextDocumentShowOptions, ViewColumn } from "vscode"
 import * as path from "path"
 import * as fs from "fs/promises"
 import { createDirectoriesForFile } from "../../utils/fs"
@@ -269,9 +270,10 @@ export class DiffViewProvider {
 		if (!this.relPath) {
 			throw new Error("No file path set")
 		}
-		const uri = vscode.Uri.file(path.resolve(this.cwd, this.relPath))
+		// right uri = the file path
+		const rightUri = vscode.Uri.file(path.resolve(this.cwd, this.relPath))
 		// Read user setting for diffView.autoFocus
-		const autoFocus = vscode.workspace.getConfiguration("roo-cline").get<boolean>("diffView.autoFocus", true)
+		const autoFocus = vscode.workspace.getConfiguration("roo-cline").get<boolean>("diffViewAutoFocus", true)
 		// If this diff editor is already open (ie if a previous write file was interrupted) then we should activate that instead of opening a new diff
 		const diffTab = vscode.window.tabGroups.all
 			.flatMap((group) => group.tabs)
@@ -279,7 +281,7 @@ export class DiffViewProvider {
 				(tab) =>
 					tab.input instanceof vscode.TabInputTextDiff &&
 					tab.input?.original?.scheme === DIFF_VIEW_URI_SCHEME &&
-					arePathsEqual(tab.input.modified.fsPath, uri.fsPath),
+					arePathsEqual(tab.input.modified.fsPath, rightUri.fsPath),
 			)
 		if (diffTab && diffTab.input instanceof vscode.TabInputTextDiff) {
 			// Only focus if autoFocus is true
@@ -289,35 +291,40 @@ export class DiffViewProvider {
 			}
 			// Try to find the editor without focusing
 			const editor = vscode.window.visibleTextEditors.find((ed) =>
-				arePathsEqual(ed.document.uri.fsPath, uri.fsPath),
+				arePathsEqual(ed.document.uri.fsPath, rightUri.fsPath),
 			)
 			if (editor) return editor
 			// Otherwise, open without focusing
-			await vscode.window.showTextDocument(diffTab.input.modified, { preview: false, preserveFocus: true })
+			await vscode.window.showTextDocument(diffTab.input.modified, {
+				preview: false,
+				preserveFocus: true,
+				viewColumn: ViewColumn.Beside,
+			})
 			const newEditor = vscode.window.visibleTextEditors.find((ed) =>
-				arePathsEqual(ed.document.uri.fsPath, uri.fsPath),
+				arePathsEqual(ed.document.uri.fsPath, rightUri.fsPath),
 			)
 			if (newEditor) return newEditor
 		}
 		// Open new diff editor
 		return new Promise<vscode.TextEditor>((resolve, reject) => {
-			const fileName = path.basename(uri.fsPath)
+			const fileName = path.basename(rightUri.fsPath)
 			const fileExists = this.editType === "modify"
 			const disposable = vscode.window.onDidChangeActiveTextEditor((editor) => {
-				if (editor && arePathsEqual(editor.document.uri.fsPath, uri.fsPath)) {
+				if (editor && arePathsEqual(editor.document.uri.fsPath, rightUri.fsPath)) {
 					disposable.dispose()
 					resolve(editor)
 				}
 			})
-			vscode.commands.executeCommand(
-				"vscode.diff",
-				vscode.Uri.parse(`${DIFF_VIEW_URI_SCHEME}:${fileName}`).with({
-					query: Buffer.from(this.originalContent ?? "").toString("base64"),
-				}),
-				uri,
-				`${fileName}: ${fileExists ? "Original ↔ Roo's Changes" : "New File"} (Editable)`,
-				{ viewColumn: vscode.ViewColumn.Beside, preserveFocus: !autoFocus },
-			)
+			const leftUri = vscode.Uri.parse(`${DIFF_VIEW_URI_SCHEME}:${fileName}`).with({
+				query: Buffer.from(this.originalContent ?? "").toString("base64"),
+			})
+			const title = `${fileName}: ${fileExists ? "Original ↔ Roo's Changes" : "New File"} (Editable)`
+			const textDocumentShowOptions: TextDocumentShowOptions = {
+				preview: false,
+				preserveFocus: !autoFocus,
+				viewColumn: ViewColumn.Beside,
+			}
+			vscode.commands.executeCommand("vscode.diff", leftUri, rightUri, title, textDocumentShowOptions)
 			// This may happen on very slow machines ie project idx
 			setTimeout(() => {
 				disposable.dispose()
