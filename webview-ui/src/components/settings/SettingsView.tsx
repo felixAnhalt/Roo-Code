@@ -109,6 +109,7 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 		browserToolEnabled,
 		browserViewportSize,
 		enableCheckpoints,
+		diffViewAutoFocus,
 		diffEnabled,
 		experiments,
 		fuzzyMatchThreshold,
@@ -231,6 +232,7 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 			vscode.postMessage({ type: "ttsSpeed", value: ttsSpeed })
 			vscode.postMessage({ type: "soundVolume", value: soundVolume })
 			vscode.postMessage({ type: "diffEnabled", bool: diffEnabled })
+			vscode.postMessage({ type: "diffViewAutoFocus", bool: diffViewAutoFocus })
 			vscode.postMessage({ type: "enableCheckpoints", bool: enableCheckpoints })
 			vscode.postMessage({ type: "browserViewportSize", text: browserViewportSize })
 			vscode.postMessage({ type: "remoteBrowserHost", text: remoteBrowserHost })
