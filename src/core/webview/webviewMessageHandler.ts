@@ -48,6 +48,10 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 	switch (message.type) {
 		case "diffViewAutoFocus":
 			const diffViewAutoFocus = message.bool ?? true
+			await provider.context.globalState.update("diffViewAutoFocus", diffViewAutoFocus)
+			// Also update workspace settings
+			const currentConfig = vscode.workspace.getConfiguration("roo-cline")
+			await currentConfig.update("diffViewAutoFocus", diffViewAutoFocus, vscode.ConfigurationTarget.Global)
 			await updateGlobalState("diffViewAutoFocus", diffViewAutoFocus)
 			await provider.postStateToWebview()
 			break
