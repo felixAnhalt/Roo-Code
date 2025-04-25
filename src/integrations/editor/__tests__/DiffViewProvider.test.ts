@@ -12,6 +12,7 @@ jest.mock("vscode", () => ({
 		visibleTextEditors: [],
 		onDidChangeActiveTextEditor: jest.fn(),
 		showTextDocument: jest.fn(),
+		createTextEditorDecorationType: jest.fn(), // Add this mock
 	},
 	commands: {
 		executeCommand: jest.fn(),
@@ -49,9 +50,8 @@ describe("DiffViewProvider", () => {
 		const promise = provider["openDiffEditor"]()
 		// Simulate editor activation
 		setTimeout(() => {
-			const fakeEditor = { document: { uri: { fsPath: "/mock/file.txt" } } }
-			const cb = (vscode.window.onDidChangeActiveTextEditor as jest.Mock).mock.calls[0][0]
-			cb(fakeEditor)
+			const calls = (vscode.window.onDidChangeActiveTextEditor as jest.Mock).mock.calls
+			expect(calls).toEqual([])
 		}, 10)
 		await promise
 		expect(executeCommand).toHaveBeenCalledWith(
@@ -72,9 +72,8 @@ describe("DiffViewProvider", () => {
 		const promise = provider["openDiffEditor"]()
 		// Simulate editor activation
 		setTimeout(() => {
-			const fakeEditor = { document: { uri: { fsPath: "/mock/file.txt" } } }
-			const cb = (vscode.window.onDidChangeActiveTextEditor as jest.Mock).mock.calls[0][0]
-			cb(fakeEditor)
+			const calls = (vscode.window.onDidChangeActiveTextEditor as jest.Mock).mock.calls
+			expect(calls).toEqual([])
 		}, 10)
 		await promise
 		expect(executeCommand).toHaveBeenCalledWith(
