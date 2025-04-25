@@ -120,6 +120,7 @@ type ProviderSettings = {
 	reasoningEffort?: ("low" | "medium" | "high") | undefined
 	promptCachingEnabled?: boolean | undefined
 	diffEnabled?: boolean | undefined
+	diffViewAutoFocus?: boolean | undefined
 	fuzzyMatchThreshold?: number | undefined
 	modelTemperature?: (number | null) | undefined
 	rateLimitSeconds?: number | undefined
@@ -220,6 +221,7 @@ type GlobalSettings = {
 	terminalCompressProgressBar?: boolean | undefined
 	rateLimitSeconds?: number | undefined
 	diffEnabled?: boolean | undefined
+	diffViewAutoFocus?: boolean | undefined
 	fuzzyMatchThreshold?: number | undefined
 	experiments?:
 		| {

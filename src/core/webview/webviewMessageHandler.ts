@@ -46,6 +46,11 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 		await provider.contextProxy.setValue(key, value)
 
 	switch (message.type) {
+		case "diffViewAutoFocus":
+			const diffViewAutoFocus = message.bool ?? true
+			await updateGlobalState("diffViewAutoFocus", diffViewAutoFocus)
+			await provider.postStateToWebview()
+			break
 		case "webviewDidLaunch":
 			// Load custom modes first
 			const customModes = await provider.customModesManager.getCustomModes()
