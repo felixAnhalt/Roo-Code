@@ -371,6 +371,10 @@
 			"matchPrecision": {
 				"label": "Precisió de coincidència",
 				"description": "Aquest control lliscant controla amb quina precisió han de coincidir les seccions de codi en aplicar diffs. Valors més baixos permeten coincidències més flexibles però augmenten el risc de reemplaçaments incorrectes. Utilitzeu valors per sota del 100% amb extrema precaució."
+			},
+			"autoFocus": {
+				"label": "Enfoca automàticament la pestanya de diferències en mostrar canvis d'arxius",
+				"description": "Si està desactivat, la pestanya de diferències s'obrirà en segon pla i no prendrà el focus."
 			}
 		}
 	},

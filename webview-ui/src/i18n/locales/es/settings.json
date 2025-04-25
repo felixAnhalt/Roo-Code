@@ -371,6 +371,10 @@
 			"matchPrecision": {
 				"label": "Precisión de coincidencia",
 				"description": "Este control deslizante controla cuán precisamente deben coincidir las secciones de código al aplicar diffs. Valores más bajos permiten coincidencias más flexibles pero aumentan el riesgo de reemplazos incorrectos. Use valores por debajo del 100% con extrema precaución."
+			},
+			"autoFocus": {
+				"label": "Enfocar automáticamente la pestaña de diferencias al mostrar cambios de archivos",
+				"description": "Si está desactivado, la pestaña de diferencias se abrirá en segundo plano y no tomará el foco."
 			}
 		}
 	},

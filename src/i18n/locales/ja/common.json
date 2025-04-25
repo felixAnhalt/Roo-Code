@@ -88,8 +88,6 @@
 	},
 	"input": {
 		"task_prompt": "Rooにどんなことをさせますか？",
-		"task_placeholder": "タスクをここに入力してください",
-		"diff.autoFocus.label": "ファイル変更を表示する際に差分タブを自動的にフォーカスする",
-		"diff.autoFocus.description": "無効にすると、差分タブはバックグラウンドで開き、フォーカスを奪いません。"
+		"task_placeholder": "タスクをここに入力してください"
 	}
 }

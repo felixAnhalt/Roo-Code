@@ -88,8 +88,6 @@
 	},
 	"input": {
 		"task_prompt": "Roo ne yapsın?",
-		"task_placeholder": "Görevini buraya yaz",
-		"diff.autoFocus.label": "Dosya değişiklikleri gösterildiğinde diff sekmesine otomatik odaklan",
-		"diff.autoFocus.description": "Devre dışı bırakılırsa, diff sekmesi arka planda açılır ve odağı almaz."
+		"task_placeholder": "Görevini buraya yaz"
 	}
 }

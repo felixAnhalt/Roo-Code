@@ -88,8 +88,6 @@
 	},
 	"input": {
 		"task_prompt": "Co ma zrobić Roo?",
-		"task_placeholder": "Wpisz swoje zadanie tutaj",
-		"diff.autoFocus.label": "Automatycznie ustaw fokus na zakładce różnic przy wyświetlaniu zmian w plikach",
-		"diff.autoFocus.description": "Jeśli wyłączone, zakładka różnic otworzy się w tle i nie przejmie fokusu."
+		"task_placeholder": "Wpisz swoje zadanie tutaj"
 	}
 }

@@ -88,8 +88,6 @@
 	},
 	"input": {
 		"task_prompt": "What should Roo do?",
-		"task_placeholder": "Type your task here",
-		"diff.autoFocus.label": "Automatically focus the diff tab when showing file changes",
-		"diff.autoFocus.description": "If disabled, the diff tab will open in the background instead of stealing focus."
+		"task_placeholder": "Type your task here"
 	}
 }

@@ -88,8 +88,6 @@
 	},
 	"input": {
 		"task_prompt": "Que doit faire Roo ?",
-		"task_placeholder": "Écris ta tâche ici",
-		"diff.autoFocus.label": "Mettre automatiquement le focus sur l’onglet de comparaison lors de l’affichage des modifications de fichiers",
-		"diff.autoFocus.description": "Si désactivé, l’onglet de comparaison s’ouvrira en arrière-plan sans prendre le focus."
+		"task_placeholder": "Écris ta tâche ici"
 	}
 }

@@ -88,8 +88,6 @@
 	},
 	"input": {
 		"task_prompt": "Bạn muốn Roo làm gì?",
-		"task_placeholder": "Nhập nhiệm vụ của bạn ở đây",
-		"diff.autoFocus.label": "Tự động chuyển tiêu điểm sang tab so sánh khi hiển thị thay đổi tệp",
-		"diff.autoFocus.description": "Nếu tắt, tab so sánh sẽ mở ở chế độ nền và không chiếm tiêu điểm."
+		"task_placeholder": "Nhập nhiệm vụ của bạn ở đây"
 	}
 }

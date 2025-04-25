@@ -88,8 +88,6 @@
 	},
 	"input": {
 		"task_prompt": "Cosa deve fare Roo?",
-		"task_placeholder": "Scrivi il tuo compito qui",
-		"diff.autoFocus.label": "Metti automaticamente a fuoco la scheda diff quando vengono mostrati cambiamenti ai file",
-		"diff.autoFocus.description": "Se disabilitato, la scheda diff si aprirà in background senza prendere il focus."
+		"task_placeholder": "Scrivi il tuo compito qui"
 	}
 }
