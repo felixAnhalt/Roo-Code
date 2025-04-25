@@ -88,8 +88,6 @@
 	},
 	"input": {
 		"task_prompt": "¿Qué debe hacer Roo?",
-		"task_placeholder": "Escribe tu tarea aquí",
-		"diff.autoFocus.label": "Enfocar automáticamente la pestaña de diferencias al mostrar cambios de archivos",
-		"diff.autoFocus.description": "Si está desactivado, la pestaña de diferencias se abrirá en segundo plano y no tomará el foco."
+		"task_placeholder": "Escribe tu tarea aquí"
 	}
 }

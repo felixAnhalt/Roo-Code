@@ -88,8 +88,6 @@
 	},
 	"input": {
 		"task_prompt": "讓 Roo 做什麼？",
-		"task_placeholder": "在這裡輸入工作",
-		"diff.autoFocus.label": "顯示檔案變更時自動聚焦差異分頁",
-		"diff.autoFocus.description": "若停用，差異分頁將在背景開啟且不會搶奪焦點。"
+		"task_placeholder": "在這裡輸入工作"
 	}
 }
