@@ -270,6 +270,8 @@ export class DiffViewProvider {
 			throw new Error("No file path set")
 		}
 		const uri = vscode.Uri.file(path.resolve(this.cwd, this.relPath))
+		// Read user setting for diffView.autoFocus
+		const autoFocus = vscode.workspace.getConfiguration("roo-cline").get<boolean>("diffView.autoFocus", true)
 		// If this diff editor is already open (ie if a previous write file was interrupted) then we should activate that instead of opening a new diff
 		const diffTab = vscode.window.tabGroups.all
 			.flatMap((group) => group.tabs)
@@ -280,8 +282,22 @@ export class DiffViewProvider {
 					arePathsEqual(tab.input.modified.fsPath, uri.fsPath),
 			)
 		if (diffTab && diffTab.input instanceof vscode.TabInputTextDiff) {
-			const editor = await vscode.window.showTextDocument(diffTab.input.modified)
-			return editor
+			// Only focus if autoFocus is true
+			if (autoFocus) {
+				const editor = await vscode.window.showTextDocument(diffTab.input.modified)
+				return editor
+			}
+			// Try to find the editor without focusing
+			const editor = vscode.window.visibleTextEditors.find((ed) =>
+				arePathsEqual(ed.document.uri.fsPath, uri.fsPath),
+			)
+			if (editor) return editor
+			// Otherwise, open without focusing
+			await vscode.window.showTextDocument(diffTab.input.modified, { preview: false, preserveFocus: true })
+			const newEditor = vscode.window.visibleTextEditors.find((ed) =>
+				arePathsEqual(ed.document.uri.fsPath, uri.fsPath),
+			)
+			if (newEditor) return newEditor
 		}
 		// Open new diff editor
 		return new Promise<vscode.TextEditor>((resolve, reject) => {
@@ -300,6 +316,7 @@ export class DiffViewProvider {
 				}),
 				uri,
 				`${fileName}: ${fileExists ? "Original ↔ Roo's Changes" : "New File"} (Editable)`,
+				{ viewColumn: vscode.ViewColumn.Beside, preserveFocus: !autoFocus },
 			)
 			// This may happen on very slow machines ie project idx
 			setTimeout(() => {
