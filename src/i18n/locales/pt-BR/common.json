@@ -88,6 +88,8 @@
 		"prompt_custom_path": "Digite o caminho de armazenamento personalizado para o histórico de conversas, deixe em branco para usar o local padrão",
 		"path_placeholder": "D:\\RooCodeStorage",
 		"enter_absolute_path": "Por favor, digite um caminho absoluto (ex: D:\\RooCodeStorage ou /home/user/storage)",
-		"enter_valid_path": "Por favor, digite um caminho válido"
+		"enter_valid_path": "Por favor, digite um caminho válido",
+		"diff.autoFocus.label": "Focar automaticamente a aba de diferenças ao mostrar alterações de arquivos",
+		"diff.autoFocus.description": "Se desativado, a aba de diferenças será aberta em segundo plano e não tomará o foco."
 	}
 }
