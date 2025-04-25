@@ -336,7 +336,11 @@ export class DiffViewProvider {
 					const editor = vscode.window.visibleTextEditors.find((ed) =>
 						arePathsEqual(ed.document.uri.fsPath, rightUri.fsPath),
 					)
-					if (editor) resolve(editor)
+					if (editor) {
+						resolve(editor)
+					} else {
+						reject(new Error("Failed to open diff editor, please try again..."))
+					}
 				})
 			// This may happen on very slow machines ie project idx
 			setTimeout(() => {
