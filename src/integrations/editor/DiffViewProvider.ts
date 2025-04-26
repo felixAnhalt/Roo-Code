@@ -156,8 +156,12 @@ export class DiffViewProvider {
 		if (updatedDocument.isDirty) {
 			await updatedDocument.save()
 		}
+		const autoFocus = vscode.workspace.getConfiguration("roo-cline").get<boolean>("diffViewAutoFocus", true)
 
-		await vscode.window.showTextDocument(vscode.Uri.file(absolutePath), { preview: false })
+		if (autoFocus) {
+			await vscode.window.showTextDocument(vscode.Uri.file(absolutePath), { preview: false })
+		}
+
 		await this.closeAllDiffViews()
 
 		/*
@@ -261,7 +265,7 @@ export class DiffViewProvider {
 		for (const tab of tabs) {
 			// trying to close dirty views results in save popup
 			if (!tab.isDirty) {
-				await vscode.window.tabGroups.close(tab)
+				await vscode.window.tabGroups.close(tab, true)
 			}
 		}
 	}
