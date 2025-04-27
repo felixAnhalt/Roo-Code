@@ -312,8 +312,6 @@ export class DiffViewProvider {
 		}
 		// right uri = the file path
 		const rightUri = vscode.Uri.file(path.resolve(this.cwd, this.relPath))
-		// Read user setting for diffView.autoFocus
-		const autoFocus = vscode.workspace.getConfiguration("roo-cline").get<boolean>("diffViewAutoFocus", true)
 		const editor = await this.getEditorFromDiffTab(rightUri)
 		if (editor) {
 			return editor
@@ -327,6 +325,8 @@ export class DiffViewProvider {
 				query: Buffer.from(this.originalContent ?? "").toString("base64"),
 			})
 			const title = `${fileName}: ${fileExists ? "Original ↔ Roo's Changes" : "New File"} (Editable)`
+			// Read user setting for diffView.autoFocus
+			const autoFocus = vscode.workspace.getConfiguration("roo-cline").get<boolean>("diffViewAutoFocus", true)
 			const textDocumentShowOptions: TextDocumentShowOptions = {
 				preview: false,
 				preserveFocus: !autoFocus,
@@ -337,14 +337,13 @@ export class DiffViewProvider {
 				.then(() => {
 					// If autoFocus is true, we should have already resolved the editor
 					// If autoFocus is false, we need to wait for the editor to be opened and find it
-					const editor = vscode.window.visibleTextEditors.find((ed) =>
-						arePathsEqual(ed.document.uri.fsPath, rightUri.fsPath),
-					)
-					if (editor) {
-						resolve(editor)
-					} else {
-						reject(new Error("Failed to open diff editor, please try again..."))
-					}
+					this.getEditorFromDiffTab(rightUri).then((editor) => {
+						if (editor) {
+							resolve(editor)
+						} else {
+							reject(new Error("Failed to open diff editor, please try again..."))
+						}
+					})
 				})
 			// This may happen on very slow machines ie project idx
 			setTimeout(() => {
