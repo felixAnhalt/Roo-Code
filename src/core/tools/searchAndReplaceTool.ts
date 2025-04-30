@@ -11,6 +11,7 @@ import { ClineSayTool } from "../../shared/ExtensionMessage"
 import { getReadablePath } from "../../utils/path"
 import { fileExistsAtPath } from "../../utils/fs"
 import { RecordSource } from "../context-tracking/FileContextTrackerTypes"
+import { ViewColumn } from "vscode"
 
 /**
  * Tool for performing search and replace operations on files
@@ -190,7 +191,9 @@ export async function searchAndReplaceTool(
 		// Show changes in diff view
 		if (!cline.diffViewProvider.isEditing) {
 			await cline.ask("tool", JSON.stringify(sharedMessageProps), true).catch(() => {})
-			await cline.diffViewProvider.open(validRelPath)
+			const clineRef = cline.providerRef.deref()
+			const viewColumn = clineRef?.getViewColumn() ?? ViewColumn.Beside
+			await cline.diffViewProvider.open(validRelPath, viewColumn)
 			await cline.diffViewProvider.update(fileContent, false)
 			cline.diffViewProvider.scrollToFirstDiff()
 			await delay(200)

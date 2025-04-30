@@ -10,6 +10,7 @@ import { ClineSayTool } from "../../shared/ExtensionMessage"
 import { RecordSource } from "../context-tracking/FileContextTrackerTypes"
 import { fileExistsAtPath } from "../../utils/fs"
 import { insertGroups } from "../diff/insert-groups"
+import { ViewColumn } from "vscode"
 
 export async function insertContentTool(
 	cline: Cline,
@@ -97,7 +98,9 @@ export async function insertContentTool(
 		if (!cline.diffViewProvider.isEditing) {
 			await cline.ask("tool", JSON.stringify(sharedMessageProps), true).catch(() => {})
 			// First open with original content
-			await cline.diffViewProvider.open(relPath)
+			const clineRef = cline.providerRef.deref()
+			const viewColumn = clineRef?.getViewColumn() ?? ViewColumn.Beside
+			await cline.diffViewProvider.open(relPath, viewColumn)
 			await cline.diffViewProvider.update(fileContent, false)
 			cline.diffViewProvider.scrollToFirstDiff()
 			await delay(200)

@@ -1527,4 +1527,16 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 
 		return properties
 	}
+
+	// add getter for view
+	public getViewColumn(): vscode.ViewColumn {
+		const isViewPanel = this.view?.viewType === "roo-cline.TabPanelProvider"
+		if (!isViewPanel) {
+			return vscode.ViewColumn.Beside
+		}
+		// If the view is a WebviewPanel, return its viewColumn.
+		// This property is only set if the webview is in one of the editor view columns.
+		// Therefore, we can safely return it or default to beside.
+		return (this.view as vscode.WebviewPanel).viewColumn ?? vscode.ViewColumn.Beside
+	}
 }

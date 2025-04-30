@@ -28,7 +28,12 @@ export class DiffViewProvider {
 
 	constructor(private cwd: string) {}
 
-	async open(relPath: string): Promise<void> {
+	/**
+	 * Opens a diff editor for the given relative path, optionally in a specific viewColumn.
+	 * @param relPath The relative file path to open.
+	 * @param viewColumn (Optional) The VSCode editor group to open the diff in.
+	 */
+	async open(relPath: string, viewColumn: ViewColumn): Promise<void> {
 		this.relPath = relPath
 		const fileExists = this.editType === "modify"
 		const absolutePath = path.resolve(this.cwd, relPath)
@@ -72,7 +77,7 @@ export class DiffViewProvider {
 			}
 			this.documentWasOpen = true
 		}
-		this.activeDiffEditor = await this.openDiffEditor()
+		this.activeDiffEditor = await this.openDiffEditor(viewColumn)
 		this.fadedOverlayController = new DecorationController("fadedOverlay", this.activeDiffEditor)
 		this.activeLineController = new DecorationController("activeLine", this.activeDiffEditor)
 		// Apply faded overlay to all lines initially
@@ -270,7 +275,7 @@ export class DiffViewProvider {
 		}
 	}
 
-	private async getEditorFromDiffTab(uri: vscode.Uri): Promise<vscode.TextEditor | null> {
+	private async getEditorFromDiffTab(uri: vscode.Uri, viewColumn: ViewColumn): Promise<vscode.TextEditor | null> {
 		// Read user setting for diffView.autoFocus
 		const autoFocus = vscode.workspace.getConfiguration("roo-cline").get<boolean>("diffViewAutoFocus", true)
 		// If this diff editor is already open (ie if a previous write file was interrupted) then we should activate that instead of opening a new diff
@@ -297,7 +302,7 @@ export class DiffViewProvider {
 		await vscode.window.showTextDocument(diffTab.input.modified, {
 			preview: false,
 			preserveFocus: true,
-			viewColumn: ViewColumn.Beside,
+			viewColumn: viewColumn,
 		})
 		const newEditor = vscode.window.visibleTextEditors.find((ed) =>
 			arePathsEqual(ed.document.uri.fsPath, uri.fsPath),
@@ -306,13 +311,17 @@ export class DiffViewProvider {
 		return null
 	}
 
-	private async openDiffEditor(): Promise<vscode.TextEditor> {
+	/**
+	 * Opens the diff editor, optionally in a specific viewColumn.
+	 * @param viewColumn (Optional) The VSCode editor group to open the diff in.
+	 */
+	private async openDiffEditor(viewColumn: ViewColumn): Promise<vscode.TextEditor> {
 		if (!this.relPath) {
 			throw new Error("No file path set")
 		}
 		// right uri = the file path
 		const rightUri = vscode.Uri.file(path.resolve(this.cwd, this.relPath))
-		const editor = await this.getEditorFromDiffTab(rightUri)
+		const editor = await this.getEditorFromDiffTab(rightUri, viewColumn)
 		if (editor) {
 			return editor
 		}
@@ -330,14 +339,14 @@ export class DiffViewProvider {
 			const textDocumentShowOptions: TextDocumentShowOptions = {
 				preview: false,
 				preserveFocus: !autoFocus,
-				viewColumn: ViewColumn.Beside,
+				viewColumn: viewColumn ?? ViewColumn.Beside,
 			}
 			vscode.commands
 				.executeCommand("vscode.diff", leftUri, rightUri, title, textDocumentShowOptions)
 				.then(() => {
 					// If autoFocus is true, we should have already resolved the editor
 					// If autoFocus is false, we need to wait for the editor to be opened and find it
-					this.getEditorFromDiffTab(rightUri).then((editor) => {
+					this.getEditorFromDiffTab(rightUri, viewColumn).then((editor) => {
 						if (editor) {
 							resolve(editor)
 						} else {
