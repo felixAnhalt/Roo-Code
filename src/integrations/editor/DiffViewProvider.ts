@@ -336,13 +336,29 @@ export class DiffViewProvider {
 			const title = `${fileName}: ${fileExists ? "Original ↔ Roo's Changes" : "New File"} (Editable)`
 			// Read user setting for diffView.autoFocus
 			const autoFocus = vscode.workspace.getConfiguration("roo-cline").get<boolean>("diffViewAutoFocus", true)
+			const previousEditorDocument = vscode.window.activeTextEditor?.document
 			const textDocumentShowOptions: TextDocumentShowOptions = {
 				preview: false,
 				preserveFocus: !autoFocus,
-				viewColumn: viewColumn ?? ViewColumn.Beside,
+				viewColumn: viewColumn,
 			}
 			vscode.commands
 				.executeCommand("vscode.diff", leftUri, rightUri, title, textDocumentShowOptions)
+				.then(() => {
+					// If autoFocus is true, we don't need to do anything
+					if (autoFocus) {
+						return
+					}
+					// if there is no previous editor, we don't need to do anything
+					if (!previousEditorDocument) {
+						return
+					}
+					// if there is, we need to focus it
+					vscode.window.showTextDocument(previousEditorDocument, {
+						preview: false,
+						preserveFocus: true,
+					})
+				})
 				.then(() => {
 					// If autoFocus is true, we should have already resolved the editor
 					// If autoFocus is false, we need to wait for the editor to be opened and find it
