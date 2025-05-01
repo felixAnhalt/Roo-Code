@@ -192,7 +192,7 @@ export async function searchAndReplaceTool(
 		if (!cline.diffViewProvider.isEditing) {
 			await cline.ask("tool", JSON.stringify(sharedMessageProps), true).catch(() => {})
 			const clineRef = cline.providerRef.deref()
-			const viewColumn = clineRef?.getViewColumn() ?? ViewColumn.Beside
+			const viewColumn = clineRef?.getViewColumn() ?? ViewColumn.Active
 			await cline.diffViewProvider.open(validRelPath, viewColumn)
 			await cline.diffViewProvider.update(fileContent, false)
 			cline.diffViewProvider.scrollToFirstDiff()

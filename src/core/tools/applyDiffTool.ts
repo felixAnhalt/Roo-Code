@@ -140,7 +140,7 @@ export async function applyDiffTool(
 			// Show diff view before asking for approval
 			cline.diffViewProvider.editType = "modify"
 			const clineRef = cline.providerRef.deref()
-			const viewColumn = clineRef?.getViewColumn() ?? ViewColumn.Beside
+			const viewColumn = clineRef?.getViewColumn() ?? ViewColumn.Active
 			await cline.diffViewProvider.open(relPath, viewColumn)
 			await cline.diffViewProvider.update(diffResult.content, true)
 			await cline.diffViewProvider.scrollToFirstDiff()

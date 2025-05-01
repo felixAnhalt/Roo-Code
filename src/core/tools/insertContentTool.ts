@@ -99,7 +99,7 @@ export async function insertContentTool(
 			await cline.ask("tool", JSON.stringify(sharedMessageProps), true).catch(() => {})
 			// First open with original content
 			const clineRef = cline.providerRef.deref()
-			const viewColumn = clineRef?.getViewColumn() ?? ViewColumn.Beside
+			const viewColumn = clineRef?.getViewColumn() ?? ViewColumn.Active
 			await cline.diffViewProvider.open(relPath, viewColumn)
 			await cline.diffViewProvider.update(fileContent, false)
 			cline.diffViewProvider.scrollToFirstDiff()

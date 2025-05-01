@@ -153,7 +153,7 @@ export async function writeToFileTool(
 				const partialMessage = JSON.stringify(sharedMessageProps)
 				await cline.ask("tool", partialMessage, true).catch(() => {}) // sending true for partial even though it's not a partial, cline shows the edit row before the content is streamed into the editor
 				const clineRef = cline.providerRef.deref()
-				const viewColumn = clineRef?.getViewColumn() ?? vscode.ViewColumn.Beside
+				const viewColumn = clineRef?.getViewColumn() ?? vscode.ViewColumn.Active
 				await cline.diffViewProvider.open(relPath, viewColumn)
 			}
 
