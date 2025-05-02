@@ -55,7 +55,7 @@ describe("DiffViewProvider", () => {
 		})
 		const executeCommand = vscode.commands.executeCommand as jest.Mock
 		executeCommand.mockResolvedValue(undefined)
-		const promise = provider["openDiffEditor"](vscode.ViewColumn.Beside)
+		const promise = provider["openDiffEditor"]()
 		// Simulate editor activation
 		setTimeout(() => {
 			const calls = (vscode.window.onDidChangeActiveTextEditor as jest.Mock).mock.calls
@@ -80,7 +80,7 @@ describe("DiffViewProvider", () => {
 		})
 		const executeCommand = vscode.commands.executeCommand as jest.Mock
 		executeCommand.mockResolvedValue(undefined)
-		const promise = provider["openDiffEditor"](vscode.ViewColumn.Beside)
+		const promise = provider["openDiffEditor"]()
 		// Simulate editor activation
 		setTimeout(() => {
 			const calls = (vscode.window.onDidChangeActiveTextEditor as jest.Mock).mock.calls
