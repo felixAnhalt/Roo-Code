@@ -29,6 +29,7 @@ export class DiffViewProvider {
 	private rooOpenedTabs: Set<string> = new Set()
 	private preserveFocus: boolean = false
 	private autoFocus: boolean = true
+	private autoCloseTabs: boolean = false
 	// have to set the default view column to -1 since we need to set it in the initialize method and during initialization the enum ViewColumn is undefined
 	private viewColumn: ViewColumn = -1 // ViewColumn.Active
 
@@ -37,6 +38,7 @@ export class DiffViewProvider {
 	async initialize(viewColumn: ViewColumn) {
 		const provider = ClineProvider.getVisibleInstance()
 		const autoFocus = vscode.workspace.getConfiguration("roo-cline").get<boolean>("diffViewAutoFocus", true)
+
 		const autoApproval =
 			(provider?.getValue("autoApprovalEnabled") && provider?.getValue("alwaysAllowWrite")) ?? false
 		// If autoApproval is enabled, we want to preserve focus if autoFocus is disabled
@@ -45,6 +47,7 @@ export class DiffViewProvider {
 		// If autoFocus is disabled, we want to preserve focus on the diff editor we are working on.
 		this.preserveFocus = autoApproval && !autoFocus
 		this.autoFocus = autoFocus
+		this.autoCloseTabs = vscode.workspace.getConfiguration("roo-cline").get<boolean>("autoCloseRooTabs", false)
 		this.viewColumn = viewColumn
 		// Track currently visible editors and active editor for focus restoration and tab cleanup
 		this.rooOpenedTabs.clear()
@@ -102,10 +105,6 @@ export class DiffViewProvider {
 			this.documentWasOpen = true
 		}
 		this.activeDiffEditor = await this.openDiffEditor()
-		// Track the diff editor tab as opened by Roo
-		if (this.activeDiffEditor) {
-			this.rooOpenedTabs.add(this.activeDiffEditor.document.uri.toString())
-		}
 		this.fadedOverlayController = new DecorationController("fadedOverlay", this.activeDiffEditor)
 		this.activeLineController = new DecorationController("activeLine", this.activeDiffEditor)
 		// Apply faded overlay to all lines initially
@@ -118,9 +117,8 @@ export class DiffViewProvider {
 	 * Opens a file editor and tracks it as opened by Roo if not already open.
 	 */
 	private async showAndTrackEditor(uri: vscode.Uri, options: vscode.TextDocumentShowOptions = {}) {
-		const alreadyOpen = vscode.window.visibleTextEditors.some((ed) => ed.document.uri.toString() === uri.toString())
 		const editor = await vscode.window.showTextDocument(uri, options)
-		if (!alreadyOpen) {
+		if (this.autoCloseTabs && !this.documentWasOpen) {
 			this.rooOpenedTabs.add(uri.toString())
 		}
 		return editor
@@ -307,8 +305,6 @@ export class DiffViewProvider {
 	}
 
 	private async closeAllRooOpenedViews() {
-		const autoCloseTabs = vscode.workspace.getConfiguration("roo-cline").get<boolean>("autoCloseRooTabs", false)
-
 		const tabs = vscode.window.tabGroups.all
 			.flatMap((tg) => tg.tabs)
 			.filter(
@@ -316,7 +312,7 @@ export class DiffViewProvider {
 					(tab.input instanceof vscode.TabInputTextDiff &&
 						tab.input?.original?.scheme === DIFF_VIEW_URI_SCHEME) ||
 					// close if in rooOpenedTabs and autoCloseTabs is enabled
-					(autoCloseTabs &&
+					(this.autoCloseTabs &&
 						tab.input instanceof vscode.TabInputText &&
 						this.rooOpenedTabs.has(tab.input.uri.toString())),
 			)
@@ -393,8 +389,10 @@ export class DiffViewProvider {
 			vscode.commands
 				.executeCommand("vscode.diff", leftUri, rightUri, title, textDocumentShowOptions)
 				.then(() => {
-					// Track the diff tab as opened by Roo
-					this.rooOpenedTabs.add(rightUri.toString())
+					if (this.autoCloseTabs && !this.documentWasOpen) {
+						// If the diff tab is not already open, add it to the set
+						this.rooOpenedTabs.add(rightUri.toString())
+					}
 					// If autoFocus is true, we don't need to do anything
 					if (this.autoFocus) {
 						return
