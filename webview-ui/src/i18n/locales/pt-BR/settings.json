@@ -375,6 +375,10 @@
 			"autoFocus": {
 				"label": "Focar automaticamente a aba de diferenças ao mostrar alterações de arquivos",
 				"description": "Se desativado, a aba de diferenças será aberta em segundo plano e não tomará o foco."
+			},
+			"autoClose": {
+				"label": "Fechar automaticamente as abas do Roo",
+				"description": "Quando ativado, o Roo fechará automaticamente as abas que abriu (como visualizações de diferenças e arquivos abertos) quando uma tarefa que envolve modificação de arquivos é concluída ou revertida."
 			}
 		}
 	},

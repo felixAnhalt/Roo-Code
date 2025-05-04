@@ -375,6 +375,10 @@
 			"autoFocus": {
 				"label": "Enfoca automàticament la pestanya de diferències en mostrar canvis d'arxius",
 				"description": "Si està desactivat, la pestanya de diferències s'obrirà en segon pla i no prendrà el focus."
+			},
+			"autoClose": {
+				"label": "Tanca automàticament les pestanyes de Roo",
+				"description": "Quan està activat, Roo tancarà automàticament les pestanyes que hagi obert (com les vistes de diferències i els fitxers oberts) quan una tasca que impliqui modificació de fitxers es completi o es reverteixi."
 			}
 		}
 	},

@@ -375,6 +375,10 @@
 			"autoFocus": {
 				"label": "Tự động chuyển tiêu điểm sang tab so sánh khi hiển thị thay đổi tệp",
 				"description": "Nếu tắt, tab so sánh sẽ mở ở chế độ nền và không chiếm tiêu điểm."
+			},
+			"autoClose": {
+				"label": "Tự động đóng các tab Roo",
+				"description": "Khi bật, Roo sẽ tự động đóng các tab nó đã mở (như chế độ xem diff, các tệp đã mở) khi một tác vụ liên quan đến sửa đổi tệp hoàn thành hoặc được hoàn tác."
 			}
 		}
 	},

@@ -375,6 +375,10 @@
 			"autoFocus": {
 				"label": "Dosya değişiklikleri gösterildiğinde diff sekmesine otomatik odaklan",
 				"description": "Devre dışı bırakılırsa, diff sekmesi arka planda açılır ve odağı almaz."
+			},
+			"autoClose": {
+				"label": "Roo'nun açtığı sekmeleri otomatik kapat",
+				"description": "Etkinleştirildiğinde, Roo dosya değişikliği içeren bir görev tamamlandığında veya geri alındığında açtığı sekmeleri (ör. diff görünümleri, açılan dosyalar) otomatik olarak kapatacaktır."
 			}
 		}
 	},

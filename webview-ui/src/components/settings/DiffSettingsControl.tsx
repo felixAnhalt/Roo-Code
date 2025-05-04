@@ -3,17 +3,23 @@ import { Slider } from "@/components/ui"
 import { useAppTranslation } from "@/i18n/TranslationContext"
 import { VSCodeCheckbox } from "@vscode/webview-ui-toolkit/react"
 
-type DiffSettingsControlField = "diffEnabled" | "fuzzyMatchThreshold" | "diffViewAutoFocus"
+type DiffSettingsControlField = "diffEnabled" | "fuzzyMatchThreshold" | "diffViewAutoFocus" | "autoCloseRooTabs"
 
 interface DiffSettingsControlProps {
 	diffEnabled?: boolean
 	diffViewAutoFocus?: boolean
+	autoCloseRooTabs?: boolean
 	fuzzyMatchThreshold?: number
 	onChange: (field: DiffSettingsControlField, value: any) => void
 }
 
 interface DiffCheckAutoFocusControlProps {
 	diffViewAutoFocus: boolean
+	onChange: (e: any) => void
+}
+
+interface DiffCheckAutoCloseControlProps {
+	autoCloseRooTabs: boolean
 	onChange: (e: any) => void
 }
 
@@ -31,6 +37,20 @@ const DiffViewAutoFocusControl: React.FC<DiffCheckAutoFocusControlProps> = ({ di
 			</VSCodeCheckbox>
 			<div className="text-vscode-descriptionForeground text-sm">
 				{t("settings:advanced.diff.autoFocus.description")}
+			</div>
+		</div>
+	)
+}
+
+const DiffViewAutoCloseControl: React.FC<DiffCheckAutoCloseControlProps> = ({ autoCloseRooTabs, onChange }) => {
+	const { t } = useAppTranslation()
+	return (
+		<div>
+			<VSCodeCheckbox checked={autoCloseRooTabs} onChange={onChange}>
+				<span className="font-medium">{t("settings:advanced.diff.autoClose.label")}</span>
+			</VSCodeCheckbox>
+			<div className="text-vscode-descriptionForeground text-sm">
+				{t("settings:advanced.diff.autoClose.description")}
 			</div>
 		</div>
 	)
@@ -66,6 +86,7 @@ const DiffPrecisionMatchControl: React.FC<DiffPrecisionMatchControlProps> = ({
 export const DiffSettingsControl: React.FC<DiffSettingsControlProps> = ({
 	diffEnabled = true,
 	diffViewAutoFocus = true,
+	autoCloseRooTabs = false,
 	fuzzyMatchThreshold = 1.0,
 	onChange,
 }) => {
@@ -92,6 +113,13 @@ export const DiffSettingsControl: React.FC<DiffSettingsControlProps> = ({
 		[onChange],
 	)
 
+	const handleAutoCloseRooTabsChange = useCallback(
+		(e: any) => {
+			onChange("autoCloseRooTabs", e.target.checked)
+		},
+		[onChange],
+	)
+
 	return (
 		<div className="flex flex-col gap-1">
 			<div>
@@ -112,6 +140,10 @@ export const DiffSettingsControl: React.FC<DiffSettingsControlProps> = ({
 					<DiffViewAutoFocusControl
 						diffViewAutoFocus={diffViewAutoFocus}
 						onChange={handleDiffViewAutoFocusChange}
+					/>
+					<DiffViewAutoCloseControl
+						autoCloseRooTabs={autoCloseRooTabs}
+						onChange={handleAutoCloseRooTabsChange}
 					/>
 				</>
 			)}

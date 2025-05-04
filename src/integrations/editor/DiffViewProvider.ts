@@ -306,14 +306,21 @@ export class DiffViewProvider {
 	}
 
 	private async closeAllRooOpenedViews() {
+		const autoCloseTabs = vscode.workspace.getConfiguration("roo-cline").get<boolean>("autoCloseRooTabs", false)
+		if (!autoCloseTabs) {
+			return
+		}
+
 		const tabs = vscode.window.tabGroups.all
 			.flatMap((tg) => tg.tabs)
 			.filter(
 				(tab) =>
 					(tab.input instanceof vscode.TabInputTextDiff &&
 						tab.input?.original?.scheme === DIFF_VIEW_URI_SCHEME) ||
-					// close if in rooOpenedTabs
-					(tab.input instanceof vscode.TabInputText && this.rooOpenedTabs.has(tab.input.uri.toString())),
+					// close if in rooOpenedTabs and autoCloseTabs is enabled
+					(autoCloseTabs &&
+						tab.input instanceof vscode.TabInputText &&
+						this.rooOpenedTabs.has(tab.input.uri.toString())),
 			)
 		for (const tab of tabs) {
 			// trying to close dirty views results in save popup

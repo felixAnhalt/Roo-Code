@@ -128,6 +128,7 @@ type ProviderSettings = {
 	promptCachingEnabled?: boolean | undefined
 	diffEnabled?: boolean | undefined
 	diffViewAutoFocus?: boolean | undefined
+	autoCloseRooTabs?: boolean | undefined
 	fuzzyMatchThreshold?: number | undefined
 	modelTemperature?: (number | null) | undefined
 	rateLimitSeconds?: number | undefined
@@ -230,6 +231,7 @@ type GlobalSettings = {
 	rateLimitSeconds?: number | undefined
 	diffEnabled?: boolean | undefined
 	diffViewAutoFocus?: boolean | undefined
+	autoCloseRooTabs?: boolean | undefined
 	fuzzyMatchThreshold?: number | undefined
 	experiments?:
 		| {
