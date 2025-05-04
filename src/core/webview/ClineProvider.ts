@@ -1530,12 +1530,6 @@ export class ClineProvider extends EventEmitter<ClineProviderEvents> implements 
 
 	// add getter for view
 	public getViewColumn(): vscode.ViewColumn {
-		const isViewPanel = this.view?.viewType === "roo-cline.TabPanelProvider"
-		if (!isViewPanel) {
-			// If the view is not a WebviewPanel, return Beside.
-			// This is necessary to ensure that the view is always opened beside the current active editor not stealing focus.
-			return vscode.ViewColumn.Beside
-		}
 		// If the view is a WebviewPanel, return its viewColumn.
 		// This property is only set if the webview is in one of the editor view columns.
 		// Therefore, we can safely return it or default to beside.

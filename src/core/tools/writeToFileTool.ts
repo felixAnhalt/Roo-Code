@@ -85,7 +85,7 @@ export async function writeToFileTool(
 			if (!cline.diffViewProvider.isEditing) {
 				// open the editor and prepare to stream content in
 				const clineRef = cline.providerRef.deref()
-				const viewColumn = clineRef?.getViewColumn() ?? vscode.ViewColumn.Beside
+				const viewColumn = clineRef?.getViewColumn() ?? vscode.ViewColumn.Active
 				await cline.diffViewProvider.open(relPath, viewColumn)
 			}
 

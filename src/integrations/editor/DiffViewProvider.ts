@@ -327,10 +327,7 @@ export class DiffViewProvider {
 		}
 		// Only focus if autoFocus is true
 		if (this.autoFocus) {
-			const editor = await this.showAndTrackEditor(diffTab.input.modified, {
-				viewColumn: vscode.ViewColumn.Active,
-				preserveFocus: this.preserveFocus,
-			})
+			const editor = await this.showAndTrackEditor(diffTab.input.modified)
 			return editor
 		}
 		// Try to find the editor without focusing
@@ -393,7 +390,8 @@ export class DiffViewProvider {
 					// if there is, we need to focus it
 					vscode.window.showTextDocument(previousEditor.document, {
 						preview: false,
-						preserveFocus: this.preserveFocus,
+						// we need to force focus here now, because we want to restore the previous selection
+						preserveFocus: false,
 						selection: previousEditor.selection,
 					})
 				})
