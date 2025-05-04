@@ -29,7 +29,8 @@ export class DiffViewProvider {
 	private rooOpenedTabs: Set<string> = new Set()
 	private preserveFocus: boolean = false
 	private autoFocus: boolean = true
-	private viewColumn: ViewColumn = ViewColumn.Active
+	// have to set the default view column to -1 since we need to set it in the initialize method and during initialization the enum ViewColumn is undefined
+	private viewColumn: ViewColumn = -1 // ViewColumn.Active
 
 	constructor(private cwd: string) {}
 
