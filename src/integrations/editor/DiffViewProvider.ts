@@ -308,9 +308,6 @@ export class DiffViewProvider {
 
 	private async closeAllRooOpenedViews() {
 		const autoCloseTabs = vscode.workspace.getConfiguration("roo-cline").get<boolean>("autoCloseRooTabs", false)
-		if (!autoCloseTabs) {
-			return
-		}
 
 		const tabs = vscode.window.tabGroups.all
 			.flatMap((tg) => tg.tabs)
