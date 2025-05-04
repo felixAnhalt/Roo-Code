@@ -200,10 +200,21 @@ export class DiffViewProvider {
 		if (updatedDocument.isDirty) {
 			await updatedDocument.save()
 		}
-		if (this.autoFocus) {
-			await vscode.window.showTextDocument(vscode.Uri.file(absolutePath), { preview: false })
+		const previousEditor = vscode.window.activeTextEditor
+		const textDocumentShowOptions: TextDocumentShowOptions = {
+			preview: false,
+			preserveFocus: this.preserveFocus,
+			viewColumn: this.viewColumn,
 		}
-		await this.closeAllDiffViews()
+		await vscode.window.showTextDocument(vscode.Uri.file(absolutePath), textDocumentShowOptions)
+		if (!this.autoFocus && previousEditor) {
+			await vscode.window.showTextDocument(previousEditor.document, {
+				preview: false,
+				preserveFocus: false,
+				selection: previousEditor.selection,
+			})
+		}
+		await this.closeAllRooOpenedViews()
 		/*
 		Getting diagnostics before and after the file edit is a better approach than
 		automatically tracking problems in real-time. This method ensures we only
@@ -262,7 +273,7 @@ export class DiffViewProvider {
 			if (updatedDocument.isDirty) {
 				await updatedDocument.save()
 			}
-			await this.closeAllDiffViews()
+			await this.closeAllRooOpenedViews()
 			await fs.unlink(absolutePath)
 			// Remove only the directories we created, in reverse order
 			for (let i = this.createdDirs.length - 1; i >= 0; i--) {
@@ -287,14 +298,14 @@ export class DiffViewProvider {
 					preview: false,
 				})
 			}
-			await this.closeAllDiffViews()
+			await this.closeAllRooOpenedViews()
 		}
 
 		// edit is done
 		await this.reset()
 	}
 
-	private async closeAllDiffViews() {
+	private async closeAllRooOpenedViews() {
 		const tabs = vscode.window.tabGroups.all
 			.flatMap((tg) => tg.tabs)
 			.filter(
