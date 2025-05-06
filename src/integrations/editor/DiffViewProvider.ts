@@ -1,5 +1,5 @@
 import * as vscode from "vscode"
-import { TextDocumentShowOptions, ViewColumn } from "vscode"
+import { TextDocument, TextDocumentShowOptions, ViewColumn } from "vscode"
 import * as path from "path"
 import * as fs from "fs/promises"
 import { createDirectoriesForFile } from "../../utils/fs"
@@ -27,30 +27,142 @@ export class DiffViewProvider {
 	private streamedLines: string[] = []
 	private preDiagnostics: [vscode.Uri, vscode.Diagnostic[]][] = []
 	private rooOpenedTabs: Set<string> = new Set()
-	private preserveFocus: boolean = false
-	private autoFocus: boolean = true
+	private preserveFocus: boolean | undefined = undefined
+	private autoApproval: boolean | undefined = undefined
+	private autoFocus: boolean | undefined = undefined
 	private autoCloseTabs: boolean = false
 	// have to set the default view column to -1 since we need to set it in the initialize method and during initialization the enum ViewColumn is undefined
 	private viewColumn: ViewColumn = -1 // ViewColumn.Active
+	private userInteractionListeners: vscode.Disposable[] = []
+	private suppressInteractionFlag: boolean = false
 
 	constructor(private cwd: string) {}
 
-	async initialize(viewColumn: ViewColumn) {
+	private async initialize(viewColumn: ViewColumn) {
 		const provider = ClineProvider.getVisibleInstance()
-		const autoFocus = vscode.workspace.getConfiguration("roo-cline").get<boolean>("diffViewAutoFocus", true)
-
-		const autoApproval =
-			(provider?.getValue("autoApprovalEnabled") && provider?.getValue("alwaysAllowWrite")) ?? false
 		// If autoApproval is enabled, we want to preserve focus if autoFocus is disabled
 		// AutoApproval is enabled when the user has set "alwaysAllowWrite" and "autoApprovalEnabled" to true
 		// AutoFocus is enabled when the user has set "diffView.autoFocus" to true, this is the default.
 		// If autoFocus is disabled, we want to preserve focus on the diff editor we are working on.
-		this.preserveFocus = autoApproval && !autoFocus
-		this.autoFocus = autoFocus
+		// we have to check for null values for the first initialization
+		if (this.autoApproval === undefined) {
+			this.autoApproval =
+				(provider?.getValue("autoApprovalEnabled") && provider?.getValue("alwaysAllowWrite")) ?? false
+		}
+		if (this.autoFocus === undefined) {
+			this.autoFocus = vscode.workspace.getConfiguration("roo-cline").get<boolean>("diffViewAutoFocus", true)
+		}
+		this.preserveFocus = this.autoApproval && !this.autoFocus
 		this.autoCloseTabs = vscode.workspace.getConfiguration("roo-cline").get<boolean>("autoCloseRooTabs", false)
 		this.viewColumn = viewColumn
 		// Track currently visible editors and active editor for focus restoration and tab cleanup
 		this.rooOpenedTabs.clear()
+	}
+
+	private async showTextDocumentSafe({
+		uri,
+		textDocument,
+		options,
+	}: {
+		uri?: vscode.Uri
+		textDocument?: TextDocument
+		options?: TextDocumentShowOptions
+	}) {
+		this.suppressInteractionFlag = true
+		// If the uri is already open, we want to focus it
+		if (uri) {
+			const editor = await vscode.window.showTextDocument(uri, options)
+			this.suppressInteractionFlag = false
+			return editor
+		}
+		// If the textDocument is already open, we want to focus it
+		if (textDocument) {
+			const editor = await vscode.window.showTextDocument(textDocument, options)
+			this.suppressInteractionFlag = false
+			return editor
+		}
+		// If the textDocument is not open and not able to be opened, we just reset the suppressInteractionFlag
+		this.suppressInteractionFlag = false
+		return null
+	}
+
+	/**
+	 * Resets the auto-focus listeners to prevent memory leaks.
+	 * This is called when the diff editor is closed or when the user interacts with other editors.
+	 */
+	private resetAutoFocusListeners() {
+		this.userInteractionListeners.forEach((listener) => listener.dispose())
+		this.userInteractionListeners = []
+	}
+
+	/**
+	 * Disables auto-focus on the diff editor after user interaction.
+	 * This is to prevent the diff editor from stealing focus when the user interacts with other editors or tabs.
+	 */
+	private disableAutoFocusAfterUserInteraction() {
+		this.resetAutoFocusListeners()
+		// first reset listeners if they exist
+		this.userInteractionListeners.forEach((listener) => listener.dispose())
+		this.userInteractionListeners = []
+		// if auto approval is disabled or auto focus is disabled, we don't need to add listeners
+		if (!this.autoApproval || !this.autoFocus) {
+			return
+		}
+		// then add new listeners
+		const changeTextEditorSelectionListener = vscode.window.onDidChangeTextEditorSelection((_e) => {
+			// If the change was done programmatically, or if there is actually no editor or the user did not allow auto approval, we don't want to suppress focus
+			if (this.suppressInteractionFlag) {
+				// If the user is interacting with the diff editor, we don't want to suppress focus
+				// If the user is interacting with another editor, we want to suppress focus
+				return
+			}
+			// Consider this a "user interaction"
+			this.preserveFocus = true
+			this.autoFocus = false
+			// remove the listeners since we don't need them anymore
+			this.resetAutoFocusListeners()
+		}, this)
+		const changeActiveTextEditorListener = vscode.window.onDidChangeActiveTextEditor((editor) => {
+			// If the change was done programmatically, or if there is actually no editor or the user did not allow auto approval, we don't want to suppress focus
+			if (this.suppressInteractionFlag || !editor) {
+				// If the user is interacting with the diff editor, we don't want to suppress focus
+				// If the user is interacting with another editor, we want to suppress focus
+				return
+			}
+			// Consider this a "user interaction"
+			this.preserveFocus = true
+			this.autoFocus = false
+			// remove the listeners since we don't need them anymore
+			this.resetAutoFocusListeners()
+		}, this)
+		const changeTabListener = vscode.window.tabGroups.onDidChangeTabs((_e) => {
+			// Some tab was added/removed/changed
+			// If the change was done programmatically, or the user did not allow auto approval, we don't want to suppress focus
+			if (this.suppressInteractionFlag) {
+				return
+			}
+			this.preserveFocus = true
+			this.autoFocus = false
+			// remove the listeners since we don't need them anymore
+			this.resetAutoFocusListeners()
+		}, this)
+		const changeTabGroupListener = vscode.window.tabGroups.onDidChangeTabGroups((_e) => {
+			// Tab group layout changed (e.g., split view)
+			// If the change was done programmatically, or the user did not allow auto approval, we don't want to suppress focus
+			if (this.suppressInteractionFlag) {
+				return
+			}
+			this.preserveFocus = true
+			this.autoFocus = false
+			// remove the listeners since we don't need them anymore
+			this.resetAutoFocusListeners()
+		}, this)
+		this.userInteractionListeners.push(
+			changeTextEditorSelectionListener,
+			changeActiveTextEditorListener,
+			changeTabListener,
+			changeTabGroupListener,
+		)
 	}
 
 	/**
@@ -60,6 +172,7 @@ export class DiffViewProvider {
 	 */
 	async open(relPath: string, viewColumn: ViewColumn): Promise<void> {
 		await this.initialize(viewColumn)
+		this.disableAutoFocusAfterUserInteraction()
 		// Set the edit type based on the file existence
 		this.relPath = relPath
 		const fileExists = this.editType === "modify"
@@ -117,7 +230,7 @@ export class DiffViewProvider {
 	 * Opens a file editor and tracks it as opened by Roo if not already open.
 	 */
 	private async showAndTrackEditor(uri: vscode.Uri, options: vscode.TextDocumentShowOptions = {}) {
-		const editor = await vscode.window.showTextDocument(uri, options)
+		const editor = await this.showTextDocumentSafe({ uri, options })
 		if (this.autoCloseTabs && !this.documentWasOpen) {
 			this.rooOpenedTabs.add(uri.toString())
 		}
@@ -193,25 +306,10 @@ export class DiffViewProvider {
 		if (!this.relPath || !this.newContent || !this.activeDiffEditor) {
 			return { newProblemsMessage: undefined, userEdits: undefined, finalContent: undefined }
 		}
-		const absolutePath = path.resolve(this.cwd, this.relPath)
 		const updatedDocument = this.activeDiffEditor.document
 		const editedContent = updatedDocument.getText()
 		if (updatedDocument.isDirty) {
 			await updatedDocument.save()
-		}
-		const previousEditor = vscode.window.activeTextEditor
-		const textDocumentShowOptions: TextDocumentShowOptions = {
-			preview: false,
-			preserveFocus: this.preserveFocus,
-			viewColumn: this.viewColumn,
-		}
-		await vscode.window.showTextDocument(vscode.Uri.file(absolutePath), textDocumentShowOptions)
-		if (!this.autoFocus && previousEditor) {
-			await vscode.window.showTextDocument(previousEditor.document, {
-				preview: false,
-				preserveFocus: false,
-				selection: previousEditor.selection,
-			})
 		}
 		await this.closeAllRooOpenedViews()
 		/*
@@ -293,8 +391,11 @@ export class DiffViewProvider {
 			await updatedDocument.save()
 			console.log(`File ${absolutePath} has been reverted to its original content.`)
 			if (this.documentWasOpen) {
-				await vscode.window.showTextDocument(vscode.Uri.file(absolutePath), {
-					preview: false,
+				await this.showTextDocumentSafe({
+					uri: vscode.Uri.file(absolutePath),
+					options: {
+						preview: false,
+					},
 				})
 			}
 			await this.closeAllRooOpenedViews()
@@ -386,9 +487,13 @@ export class DiffViewProvider {
 				preserveFocus: this.preserveFocus,
 				viewColumn: this.viewColumn,
 			}
+			// set interaction flag to true to prevent autoFocus from being triggered
+			this.suppressInteractionFlag = true
 			vscode.commands
 				.executeCommand("vscode.diff", leftUri, rightUri, title, textDocumentShowOptions)
 				.then(() => {
+					// set interaction flag to false to allow autoFocus to be triggered
+					this.suppressInteractionFlag = false
 					if (this.autoCloseTabs && !this.documentWasOpen) {
 						// If the diff tab is not already open, add it to the set
 						this.rooOpenedTabs.add(rightUri.toString())
@@ -402,11 +507,14 @@ export class DiffViewProvider {
 						return
 					}
 					// if there is, we need to focus it
-					vscode.window.showTextDocument(previousEditor.document, {
-						preview: false,
-						// we need to force focus here now, because we want to restore the previous selection
-						preserveFocus: false,
-						selection: previousEditor.selection,
+					this.showTextDocumentSafe({
+						textDocument: previousEditor.document,
+						options: {
+							preview: false,
+							preserveFocus: false,
+							selection: previousEditor.selection,
+							viewColumn: previousEditor.viewColumn,
+						},
 					})
 				})
 				.then(() => {
@@ -479,5 +587,8 @@ export class DiffViewProvider {
 		this.activeLineController = undefined
 		this.streamedLines = []
 		this.preDiagnostics = []
+		this.rooOpenedTabs.clear()
+		this.autoCloseTabs = false
+		this.resetAutoFocusListeners()
 	}
 }
