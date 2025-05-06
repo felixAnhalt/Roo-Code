@@ -29,6 +29,8 @@ export const providerNames = [
 	"human-relay",
 	"fake-ai",
 	"xai",
+	"groq",
+	"chutes",
 ] as const
 
 export const providerNamesSchema = z.enum(providerNames)
@@ -59,6 +61,7 @@ export const languages = [
 	"it",
 	"ja",
 	"ko",
+	"nl",
 	"pl",
 	"pt-BR",
 	"ru",
@@ -364,7 +367,6 @@ export const providerSettingsSchema = z.object({
 	awsRegion: z.string().optional(),
 	awsUseCrossRegionInference: z.boolean().optional(),
 	awsUsePromptCache: z.boolean().optional(),
-	awspromptCacheId: z.string().optional(),
 	awsProfile: z.string().optional(),
 	awsUseProfile: z.boolean().optional(),
 	awsCustomArn: z.string().optional(),
@@ -423,13 +425,17 @@ export const providerSettingsSchema = z.object({
 	requestyModelId: z.string().optional(),
 	// X.AI (Grok)
 	xaiApiKey: z.string().optional(),
+	// Groq
+	groqApiKey: z.string().optional(),
+	// Chutes AI
+	chutesApiKey: z.string().optional(),
 	// Claude 3.7 Sonnet Thinking
 	modelMaxTokens: z.number().optional(),
 	modelMaxThinkingTokens: z.number().optional(),
 	// Generic
 	includeMaxTokens: z.boolean().optional(),
 	reasoningEffort: reasoningEffortsSchema.optional(),
-	promptCachingEnabled: z.boolean().optional(),
+	promptCachingDisabled: z.boolean().optional(),
 	diffEnabled: z.boolean().optional(),
 	diffViewAutoFocus: z.boolean().optional(),
 	autoCloseRooTabs: z.boolean().optional(),
@@ -467,7 +473,6 @@ const providerSettingsRecord: ProviderSettingsRecord = {
 	awsRegion: undefined,
 	awsUseCrossRegionInference: undefined,
 	awsUsePromptCache: undefined,
-	awspromptCacheId: undefined,
 	awsProfile: undefined,
 	awsUseProfile: undefined,
 	awsCustomArn: undefined,
@@ -522,7 +527,7 @@ const providerSettingsRecord: ProviderSettingsRecord = {
 	// Generic
 	includeMaxTokens: undefined,
 	reasoningEffort: undefined,
-	promptCachingEnabled: undefined,
+	promptCachingDisabled: undefined,
 	diffEnabled: undefined,
 	diffViewAutoFocus: undefined,
 	autoCloseRooTabs: undefined,
@@ -533,6 +538,10 @@ const providerSettingsRecord: ProviderSettingsRecord = {
 	fakeAi: undefined,
 	// X.AI (Grok)
 	xaiApiKey: undefined,
+	// Groq
+	groqApiKey: undefined,
+	// Chutes AI
+	chutesApiKey: undefined,
 }
 
 export const PROVIDER_SETTINGS_KEYS = Object.keys(providerSettingsRecord) as Keys<ProviderSettings>[]
@@ -729,6 +738,8 @@ export type SecretState = Pick<
 	| "unboundApiKey"
 	| "requestyApiKey"
 	| "xaiApiKey"
+	| "groqApiKey"
+	| "chutesApiKey"
 >
 
 type SecretStateRecord = Record<Keys<SecretState>, undefined>
@@ -748,6 +759,8 @@ const secretStateRecord: SecretStateRecord = {
 	unboundApiKey: undefined,
 	requestyApiKey: undefined,
 	xaiApiKey: undefined,
+	groqApiKey: undefined,
+	chutesApiKey: undefined,
 }
 
 export const SECRET_STATE_KEYS = Object.keys(secretStateRecord) as Keys<SecretState>[]

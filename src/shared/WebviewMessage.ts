@@ -44,6 +44,7 @@ export interface WebviewMessage {
 		| "importSettings"
 		| "exportSettings"
 		| "resetState"
+		| "flushRouterModels"
 		| "requestRouterModels"
 		| "requestOpenAiModels"
 		| "requestOllamaModels"
@@ -53,6 +54,9 @@ export interface WebviewMessage {
 		| "openFile"
 		| "openMention"
 		| "cancelTask"
+		| "updateVSCodeSetting"
+		| "getVSCodeSetting"
+		| "vsCodeSetting"
 		| "alwaysAllowBrowser"
 		| "alwaysAllowMcp"
 		| "alwaysAllowModeSwitch"
@@ -147,6 +151,7 @@ export interface WebviewMessage {
 	dataUrls?: string[]
 	values?: Record<string, any>
 	query?: string
+	setting?: string
 	slug?: string
 	modeConfig?: ModeConfig
 	timeout?: number
