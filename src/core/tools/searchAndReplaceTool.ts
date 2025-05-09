@@ -184,7 +184,7 @@ export async function searchAndReplaceTool(
 		const diff = formatResponse.createPrettyPatch(validRelPath, fileContent, newContent)
 		if (!diff) {
 			pushToolResult(`No changes needed for '${relPath}'`)
-			await cline.diffViewProvider.reset()
+			await cline.diffViewProvider.resetWithListeners()
 			return
 		}
 
@@ -210,7 +210,7 @@ export async function searchAndReplaceTool(
 		if (!didApprove) {
 			await cline.diffViewProvider.revertChanges()
 			pushToolResult("Changes were rejected by the user.")
-			await cline.diffViewProvider.reset()
+			await cline.diffViewProvider.resetWithListeners()
 			return
 		}
 
@@ -225,7 +225,7 @@ export async function searchAndReplaceTool(
 
 		if (!userEdits) {
 			pushToolResult(`The content was successfully replaced in ${relPath}.${newProblemsMessage}`)
-			await cline.diffViewProvider.reset()
+			await cline.diffViewProvider.resetWithListeners()
 			return
 		}
 
@@ -253,10 +253,10 @@ export async function searchAndReplaceTool(
 
 		// Record successful tool usage and cleanup
 		cline.recordToolUsage("search_and_replace")
-		await cline.diffViewProvider.reset()
+		await cline.diffViewProvider.resetWithListeners()
 	} catch (error) {
 		handleError("search and replace", error)
-		await cline.diffViewProvider.reset()
+		await cline.diffViewProvider.resetWithListeners()
 	}
 }
 

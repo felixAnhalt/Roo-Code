@@ -38,7 +38,7 @@ export class DiffViewProvider {
 
 	constructor(private cwd: string) {}
 
-	private async initialize(viewColumn: ViewColumn) {
+	public async initialize() {
 		const provider = ClineProvider.getVisibleInstance()
 		// If autoApproval is enabled, we want to preserve focus if autoFocus is disabled
 		// AutoApproval is enabled when the user has set "alwaysAllowWrite" and "autoApprovalEnabled" to true
@@ -54,7 +54,6 @@ export class DiffViewProvider {
 		}
 		this.preserveFocus = this.autoApproval && !this.autoFocus
 		this.autoCloseTabs = vscode.workspace.getConfiguration("roo-cline").get<boolean>("autoCloseRooTabs", false)
-		this.viewColumn = viewColumn
 		// Track currently visible editors and active editor for focus restoration and tab cleanup
 		this.rooOpenedTabs.clear()
 	}
@@ -99,11 +98,8 @@ export class DiffViewProvider {
 	 * Disables auto-focus on the diff editor after user interaction.
 	 * This is to prevent the diff editor from stealing focus when the user interacts with other editors or tabs.
 	 */
-	private disableAutoFocusAfterUserInteraction() {
+	public disableAutoFocusAfterUserInteraction() {
 		this.resetAutoFocusListeners()
-		// first reset listeners if they exist
-		this.userInteractionListeners.forEach((listener) => listener.dispose())
-		this.userInteractionListeners = []
 		// if auto approval is disabled or auto focus is disabled, we don't need to add listeners
 		if (!this.autoApproval || !this.autoFocus) {
 			return
@@ -171,7 +167,7 @@ export class DiffViewProvider {
 	 * @param viewColumn (Optional) The VSCode editor group to open the diff in.
 	 */
 	async open(relPath: string, viewColumn: ViewColumn): Promise<void> {
-		await this.initialize(viewColumn)
+		this.viewColumn = viewColumn
 		this.disableAutoFocusAfterUserInteraction()
 		// Set the edit type based on the file existence
 		this.relPath = relPath
@@ -391,18 +387,13 @@ export class DiffViewProvider {
 			await updatedDocument.save()
 			console.log(`File ${absolutePath} has been reverted to its original content.`)
 			if (this.documentWasOpen) {
-				await this.showTextDocumentSafe({
-					uri: vscode.Uri.file(absolutePath),
-					options: {
-						preview: false,
-					},
-				})
+				await this.showTextDocumentSafe({ uri: vscode.Uri.file(absolutePath), options: { preview: false } })
 			}
 			await this.closeAllRooOpenedViews()
 		}
 
 		// edit is done
-		await this.reset()
+		this.resetWithListeners()
 	}
 
 	private async closeAllRooOpenedViews() {
@@ -576,7 +567,7 @@ export class DiffViewProvider {
 	}
 
 	// close editor if open?
-	async reset() {
+	reset() {
 		this.editType = undefined
 		this.isEditing = false
 		this.originalContent = undefined
@@ -589,6 +580,10 @@ export class DiffViewProvider {
 		this.preDiagnostics = []
 		this.rooOpenedTabs.clear()
 		this.autoCloseTabs = false
+	}
+
+	resetWithListeners() {
+		this.reset()
 		this.resetAutoFocusListeners()
 	}
 }

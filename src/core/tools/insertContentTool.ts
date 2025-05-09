@@ -144,7 +144,7 @@ export async function insertContentTool(
 			pushToolResult(
 				`The content was successfully inserted in ${relPath.toPosix()} at line ${lineNumber}.${newProblemsMessage}`,
 			)
-			await cline.diffViewProvider.reset()
+			await cline.diffViewProvider.resetWithListeners()
 			return
 		}
 
@@ -168,9 +168,9 @@ export async function insertContentTool(
 				`${newProblemsMessage}`,
 		)
 
-		await cline.diffViewProvider.reset()
+		await cline.diffViewProvider.resetWithListeners()
 	} catch (error) {
 		handleError("insert content", error)
-		await cline.diffViewProvider.reset()
+		await cline.diffViewProvider.resetWithListeners()
 	}
 }

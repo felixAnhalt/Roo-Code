@@ -207,13 +207,13 @@ export async function applyDiffTool(
 				)
 			}
 
-			await cline.diffViewProvider.reset()
+			await cline.diffViewProvider.resetWithListeners()
 
 			return
 		}
 	} catch (error) {
 		await handleError("applying diff", error)
-		await cline.diffViewProvider.reset()
+		await cline.diffViewProvider.resetWithListeners()
 		return
 	}
 }

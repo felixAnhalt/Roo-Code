@@ -101,7 +101,7 @@ export async function writeToFileTool(
 				cline.consecutiveMistakeCount++
 				cline.recordToolError("write_to_file")
 				pushToolResult(await cline.sayAndCreateMissingParamError("write_to_file", "path"))
-				await cline.diffViewProvider.reset()
+				await cline.diffViewProvider.resetWithListeners()
 				return
 			}
 
@@ -109,7 +109,7 @@ export async function writeToFileTool(
 				cline.consecutiveMistakeCount++
 				cline.recordToolError("write_to_file")
 				pushToolResult(await cline.sayAndCreateMissingParamError("write_to_file", "content"))
-				await cline.diffViewProvider.reset()
+				await cline.diffViewProvider.resetWithListeners()
 				return
 			}
 
@@ -246,13 +246,13 @@ export async function writeToFileTool(
 				pushToolResult(`The content was successfully saved to ${relPath.toPosix()}.${newProblemsMessage}`)
 			}
 
-			await cline.diffViewProvider.reset()
+			await cline.diffViewProvider.resetWithListeners()
 
 			return
 		}
 	} catch (error) {
 		await handleError("writing file", error)
-		await cline.diffViewProvider.reset()
+		await cline.diffViewProvider.resetWithListeners()
 		return
 	}
 }
