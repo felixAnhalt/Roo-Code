@@ -31,6 +31,7 @@ export const providerNames = [
 	"xai",
 	"groq",
 	"chutes",
+	"litellm",
 ] as const
 
 export const providerNamesSchema = z.enum(providerNames)
@@ -133,18 +134,6 @@ export const modelInfoSchema = z.object({
 })
 
 export type ModelInfo = z.infer<typeof modelInfoSchema>
-
-/**
- * ApiConfigMeta
- */
-
-export const apiConfigMetaSchema = z.object({
-	id: z.string(),
-	name: z.string(),
-	apiProvider: providerNamesSchema.optional(),
-})
-
-export type ApiConfigMeta = z.infer<typeof apiConfigMetaSchema>
 
 /**
  * HistoryItem
@@ -341,26 +330,57 @@ export type Experiments = z.infer<typeof experimentsSchema>
 type _AssertExperiments = AssertEqual<Equals<ExperimentId, Keys<Experiments>>>
 
 /**
+ * ProviderSettingsEntry
+ */
+
+export const providerSettingsEntrySchema = z.object({
+	id: z.string(),
+	name: z.string(),
+	apiProvider: providerNamesSchema.optional(),
+})
+
+export type ProviderSettingsEntry = z.infer<typeof providerSettingsEntrySchema>
+
+/**
  * ProviderSettings
  */
 
-export const providerSettingsSchema = z.object({
-	apiProvider: providerNamesSchema.optional(),
-	// Anthropic
+const genericProviderSettingsSchema = z.object({
+	includeMaxTokens: z.boolean().optional(),
+	reasoningEffort: reasoningEffortsSchema.optional(),
+	promptCachingDisabled: z.boolean().optional(),
+	diffEnabled: z.boolean().optional(),
+	diffViewAutoFocus: z.boolean().optional(),
+	autoCloseRooTabs: z.boolean().optional(),
+	fuzzyMatchThreshold: z.number().optional(),
+	modelTemperature: z.number().nullish(),
+	rateLimitSeconds: z.number().optional(),
+	// Claude 3.7 Sonnet Thinking
+	modelMaxTokens: z.number().optional(),
+	modelMaxThinkingTokens: z.number().optional(),
+})
+
+const anthropicSchema = z.object({
 	apiModelId: z.string().optional(),
 	apiKey: z.string().optional(),
 	anthropicBaseUrl: z.string().optional(),
 	anthropicUseAuthToken: z.boolean().optional(),
-	// Glama
+})
+
+const glamaSchema = z.object({
 	glamaModelId: z.string().optional(),
 	glamaApiKey: z.string().optional(),
-	// OpenRouter
+})
+
+const openRouterSchema = z.object({
 	openRouterApiKey: z.string().optional(),
 	openRouterModelId: z.string().optional(),
 	openRouterBaseUrl: z.string().optional(),
 	openRouterSpecificProvider: z.string().optional(),
 	openRouterUseMiddleOutTransform: z.boolean().optional(),
-	// Amazon Bedrock
+})
+
+const bedrockSchema = z.object({
 	awsAccessKey: z.string().optional(),
 	awsSecretKey: z.string().optional(),
 	awsSessionToken: z.string().optional(),
@@ -370,12 +390,16 @@ export const providerSettingsSchema = z.object({
 	awsProfile: z.string().optional(),
 	awsUseProfile: z.boolean().optional(),
 	awsCustomArn: z.string().optional(),
-	// Google Vertex
+})
+
+const vertexSchema = z.object({
 	vertexKeyFile: z.string().optional(),
 	vertexJsonCredentials: z.string().optional(),
 	vertexProjectId: z.string().optional(),
 	vertexRegion: z.string().optional(),
-	// OpenAI
+})
+
+const openAiSchema = z.object({
 	openAiBaseUrl: z.string().optional(),
 	openAiApiKey: z.string().optional(),
 	openAiLegacyFormat: z.boolean().optional(),
@@ -386,12 +410,16 @@ export const providerSettingsSchema = z.object({
 	azureApiVersion: z.string().optional(),
 	openAiStreamingEnabled: z.boolean().optional(),
 	enableReasoningEffort: z.boolean().optional(),
-	openAiHostHeader: z.string().optional(), // Keep temporarily for backward compatibility during migration
+	openAiHostHeader: z.string().optional(), // Keep temporarily for backward compatibility during migration.
 	openAiHeaders: z.record(z.string(), z.string()).optional(),
-	// Ollama
+})
+
+const ollamaSchema = z.object({
 	ollamaModelId: z.string().optional(),
 	ollamaBaseUrl: z.string().optional(),
-	// VS Code LM
+})
+
+const vsCodeLmSchema = z.object({
 	vsCodeLmModelSelector: z
 		.object({
 			vendor: z.string().optional(),
@@ -400,51 +428,126 @@ export const providerSettingsSchema = z.object({
 			id: z.string().optional(),
 		})
 		.optional(),
-	// LM Studio
+})
+
+const lmStudioSchema = z.object({
 	lmStudioModelId: z.string().optional(),
 	lmStudioBaseUrl: z.string().optional(),
 	lmStudioDraftModelId: z.string().optional(),
 	lmStudioSpeculativeDecodingEnabled: z.boolean().optional(),
-	// Gemini
+})
+
+const geminiSchema = z.object({
 	geminiApiKey: z.string().optional(),
 	googleGeminiBaseUrl: z.string().optional(),
-	// OpenAI Native
+})
+
+const openAiNativeSchema = z.object({
 	openAiNativeApiKey: z.string().optional(),
 	openAiNativeBaseUrl: z.string().optional(),
-	// Mistral
+})
+
+const mistralSchema = z.object({
 	mistralApiKey: z.string().optional(),
 	mistralCodestralUrl: z.string().optional(),
-	// DeepSeek
+})
+
+const deepSeekSchema = z.object({
 	deepSeekBaseUrl: z.string().optional(),
 	deepSeekApiKey: z.string().optional(),
-	// Unbound
+})
+
+const unboundSchema = z.object({
 	unboundApiKey: z.string().optional(),
 	unboundModelId: z.string().optional(),
-	// Requesty
+})
+
+const requestySchema = z.object({
 	requestyApiKey: z.string().optional(),
 	requestyModelId: z.string().optional(),
-	// X.AI (Grok)
-	xaiApiKey: z.string().optional(),
-	// Groq
-	groqApiKey: z.string().optional(),
-	// Chutes AI
-	chutesApiKey: z.string().optional(),
-	// Claude 3.7 Sonnet Thinking
-	modelMaxTokens: z.number().optional(),
-	modelMaxThinkingTokens: z.number().optional(),
-	// Generic
-	includeMaxTokens: z.boolean().optional(),
-	reasoningEffort: reasoningEffortsSchema.optional(),
-	promptCachingDisabled: z.boolean().optional(),
-	diffEnabled: z.boolean().optional(),
-	diffViewAutoFocus: z.boolean().optional(),
-	autoCloseRooTabs: z.boolean().optional(),
-	fuzzyMatchThreshold: z.number().optional(),
-	modelTemperature: z.number().nullish(),
-	rateLimitSeconds: z.number().optional(),
-	// Fake AI
+})
+
+const humanRelaySchema = z.object({})
+
+const fakeAiSchema = z.object({
 	fakeAi: z.unknown().optional(),
 })
+
+const xaiSchema = z.object({
+	xaiApiKey: z.string().optional(),
+})
+
+const groqSchema = z.object({
+	groqApiKey: z.string().optional(),
+})
+
+const chutesSchema = z.object({
+	chutesApiKey: z.string().optional(),
+})
+
+const litellmSchema = z.object({
+	litellmBaseUrl: z.string().optional(),
+	litellmApiKey: z.string().optional(),
+	litellmModelId: z.string().optional(),
+})
+
+const defaultSchema = z.object({
+	apiProvider: z.undefined(),
+})
+
+export const providerSettingsSchemaDiscriminated = z
+	.discriminatedUnion("apiProvider", [
+		anthropicSchema.merge(z.object({ apiProvider: z.literal("anthropic") })),
+		glamaSchema.merge(z.object({ apiProvider: z.literal("glama") })),
+		openRouterSchema.merge(z.object({ apiProvider: z.literal("openrouter") })),
+		bedrockSchema.merge(z.object({ apiProvider: z.literal("bedrock") })),
+		vertexSchema.merge(z.object({ apiProvider: z.literal("vertex") })),
+		openAiSchema.merge(z.object({ apiProvider: z.literal("openai") })),
+		ollamaSchema.merge(z.object({ apiProvider: z.literal("ollama") })),
+		vsCodeLmSchema.merge(z.object({ apiProvider: z.literal("vscode-lm") })),
+		lmStudioSchema.merge(z.object({ apiProvider: z.literal("lmstudio") })),
+		geminiSchema.merge(z.object({ apiProvider: z.literal("gemini") })),
+		openAiNativeSchema.merge(z.object({ apiProvider: z.literal("openai-native") })),
+		mistralSchema.merge(z.object({ apiProvider: z.literal("mistral") })),
+		deepSeekSchema.merge(z.object({ apiProvider: z.literal("deepseek") })),
+		unboundSchema.merge(z.object({ apiProvider: z.literal("unbound") })),
+		requestySchema.merge(z.object({ apiProvider: z.literal("requesty") })),
+		humanRelaySchema.merge(z.object({ apiProvider: z.literal("human-relay") })),
+		fakeAiSchema.merge(z.object({ apiProvider: z.literal("fake-ai") })),
+		xaiSchema.merge(z.object({ apiProvider: z.literal("xai") })),
+		groqSchema.merge(z.object({ apiProvider: z.literal("groq") })),
+		chutesSchema.merge(z.object({ apiProvider: z.literal("chutes") })),
+		litellmSchema.merge(z.object({ apiProvider: z.literal("litellm") })),
+		defaultSchema,
+	])
+	.and(genericProviderSettingsSchema)
+
+export const providerSettingsSchema = z
+	.object({
+		apiProvider: providerNamesSchema.optional(),
+	})
+	.merge(anthropicSchema)
+	.merge(glamaSchema)
+	.merge(openRouterSchema)
+	.merge(bedrockSchema)
+	.merge(vertexSchema)
+	.merge(openAiSchema)
+	.merge(ollamaSchema)
+	.merge(vsCodeLmSchema)
+	.merge(lmStudioSchema)
+	.merge(geminiSchema)
+	.merge(openAiNativeSchema)
+	.merge(mistralSchema)
+	.merge(deepSeekSchema)
+	.merge(unboundSchema)
+	.merge(requestySchema)
+	.merge(humanRelaySchema)
+	.merge(fakeAiSchema)
+	.merge(xaiSchema)
+	.merge(groqSchema)
+	.merge(chutesSchema)
+	.merge(litellmSchema)
+	.merge(genericProviderSettingsSchema)
 
 export type ProviderSettings = z.infer<typeof providerSettingsSchema>
 
@@ -542,6 +645,10 @@ const providerSettingsRecord: ProviderSettingsRecord = {
 	groqApiKey: undefined,
 	// Chutes AI
 	chutesApiKey: undefined,
+	// LiteLLM
+	litellmBaseUrl: undefined,
+	litellmApiKey: undefined,
+	litellmModelId: undefined,
 }
 
 export const PROVIDER_SETTINGS_KEYS = Object.keys(providerSettingsRecord) as Keys<ProviderSettings>[]
@@ -552,7 +659,7 @@ export const PROVIDER_SETTINGS_KEYS = Object.keys(providerSettingsRecord) as Key
 
 export const globalSettingsSchema = z.object({
 	currentApiConfigName: z.string().optional(),
-	listApiConfigMeta: z.array(apiConfigMetaSchema).optional(),
+	listApiConfigMeta: z.array(providerSettingsEntrySchema).optional(),
 	pinnedApiConfigs: z.record(z.string(), z.boolean()).optional(),
 
 	lastShownAnnouncementId: z.string().optional(),
@@ -740,6 +847,7 @@ export type SecretState = Pick<
 	| "xaiApiKey"
 	| "groqApiKey"
 	| "chutesApiKey"
+	| "litellmApiKey"
 >
 
 type SecretStateRecord = Record<Keys<SecretState>, undefined>
@@ -761,6 +869,7 @@ const secretStateRecord: SecretStateRecord = {
 	xaiApiKey: undefined,
 	groqApiKey: undefined,
 	chutesApiKey: undefined,
+	litellmApiKey: undefined,
 }
 
 export const SECRET_STATE_KEYS = Object.keys(secretStateRecord) as Keys<SecretState>[]
@@ -973,8 +1082,9 @@ export type TypeDefinition = {
 }
 
 export const typeDefinitions: TypeDefinition[] = [
-	{ schema: providerSettingsSchema, identifier: "ProviderSettings" },
 	{ schema: globalSettingsSchema, identifier: "GlobalSettings" },
+	{ schema: providerSettingsSchema, identifier: "ProviderSettings" },
+	{ schema: providerSettingsEntrySchema, identifier: "ProviderSettingsEntry" },
 	{ schema: clineMessageSchema, identifier: "ClineMessage" },
 	{ schema: tokenUsageSchema, identifier: "TokenUsage" },
 	{ schema: rooCodeEventsSchema, identifier: "RooCodeEvents" },

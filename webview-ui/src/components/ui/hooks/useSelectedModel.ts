@@ -1,6 +1,6 @@
 import {
 	type ProviderName,
-	type ApiConfiguration,
+	type ProviderSettings,
 	type RouterModels,
 	type ModelInfo,
 	anthropicDefaultModelId,
@@ -30,11 +30,12 @@ import {
 	requestyDefaultModelId,
 	glamaDefaultModelId,
 	unboundDefaultModelId,
+	litellmDefaultModelId,
 } from "@roo/shared/api"
 
 import { useRouterModels } from "./useRouterModels"
 
-export const useSelectedModel = (apiConfiguration?: ApiConfiguration) => {
+export const useSelectedModel = (apiConfiguration?: ProviderSettings) => {
 	const { data: routerModels, isLoading, isError } = useRouterModels()
 	const provider = apiConfiguration?.apiProvider || "anthropic"
 
@@ -52,7 +53,7 @@ function getSelectedModel({
 	routerModels,
 }: {
 	provider: ProviderName
-	apiConfiguration: ApiConfiguration
+	apiConfiguration: ProviderSettings
 	routerModels: RouterModels
 }): { id: string; info: ModelInfo } {
 	switch (provider) {
@@ -81,6 +82,13 @@ function getSelectedModel({
 			return info
 				? { id, info }
 				: { id: unboundDefaultModelId, info: routerModels.unbound[unboundDefaultModelId] }
+		}
+		case "litellm": {
+			const id = apiConfiguration.litellmModelId ?? litellmDefaultModelId
+			const info = routerModels.litellm[id]
+			return info
+				? { id, info }
+				: { id: litellmDefaultModelId, info: routerModels.litellm[litellmDefaultModelId] }
 		}
 		case "xai": {
 			const id = apiConfiguration.apiModelId ?? xaiDefaultModelId

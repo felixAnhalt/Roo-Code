@@ -3,7 +3,7 @@ import fs from "fs/promises"
 
 import { ClineSayTool } from "../../shared/ExtensionMessage"
 import { getReadablePath } from "../../utils/path"
-import { Cline } from "../Cline"
+import { Task } from "../task/Task"
 import { ToolUse, RemoveClosingTag } from "../../shared/tools"
 import { formatResponse } from "../prompts/responses"
 import { AskApproval, HandleError, PushToolResult } from "../../shared/tools"
@@ -15,7 +15,7 @@ import { unescapeHtmlEntities } from "../../utils/text-normalization"
 import { ViewColumn } from "vscode"
 
 export async function applyDiffTool(
-	cline: Cline,
+	cline: Task,
 	block: ToolUse,
 	askApproval: AskApproval,
 	handleError: HandleError,

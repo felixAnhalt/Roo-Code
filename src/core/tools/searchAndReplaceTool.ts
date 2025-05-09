@@ -4,7 +4,7 @@ import fs from "fs/promises"
 import delay from "delay"
 
 // Internal imports
-import { Cline } from "../Cline"
+import { Task } from "../task/Task"
 import { AskApproval, HandleError, PushToolResult, RemoveClosingTag, ToolUse } from "../../shared/tools"
 import { formatResponse } from "../prompts/responses"
 import { ClineSayTool } from "../../shared/ExtensionMessage"
@@ -22,7 +22,7 @@ import { ViewColumn } from "vscode"
  * Validates required parameters for search and replace operation
  */
 async function validateParams(
-	cline: Cline,
+	cline: Task,
 	relPath: string | undefined,
 	search: string | undefined,
 	replace: string | undefined,
@@ -62,7 +62,7 @@ async function validateParams(
  * @param removeClosingTag - Function to remove closing tags
  */
 export async function searchAndReplaceTool(
-	cline: Cline,
+	cline: Task,
 	block: ToolUse,
 	askApproval: AskApproval,
 	handleError: HandleError,

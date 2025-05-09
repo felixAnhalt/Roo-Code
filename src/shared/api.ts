@@ -1,10 +1,8 @@
 import { ModelInfo, ProviderName, ProviderSettings } from "../schemas"
 
-export type { ModelInfo, ProviderName }
+export type { ModelInfo, ProviderName, ProviderSettings }
 
 export type ApiHandlerOptions = Omit<ProviderSettings, "apiProvider" | "id">
-
-export type ApiConfiguration = ProviderSettings
 
 // Anthropic
 // https://docs.anthropic.com/en/docs/about-claude/models
@@ -1136,6 +1134,20 @@ export const unboundDefaultModelInfo: ModelInfo = {
 	cacheReadsPrice: 0.3,
 }
 
+// LiteLLM
+// https://docs.litellm.ai/
+export const litellmDefaultModelId = "anthropic/claude-3-7-sonnet-20250219"
+export const litellmDefaultModelInfo: ModelInfo = {
+	maxTokens: 8192,
+	contextWindow: 200_000,
+	supportsImages: true,
+	supportsComputerUse: true,
+	supportsPromptCache: true,
+	inputPrice: 3.0,
+	outputPrice: 15.0,
+	cacheWritesPrice: 3.75,
+	cacheReadsPrice: 0.3,
+}
 // xAI
 // https://docs.x.ai/docs/api-reference
 export type XAIModelId = keyof typeof xaiModels
@@ -1731,7 +1743,7 @@ export const COMPUTER_USE_MODELS = new Set([
 	"anthropic/claude-3.7-sonnet:thinking",
 ])
 
-const routerNames = ["openrouter", "requesty", "glama", "unbound"] as const
+const routerNames = ["openrouter", "requesty", "glama", "unbound", "litellm"] as const
 
 export type RouterName = (typeof routerNames)[number]
 

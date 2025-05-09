@@ -4,11 +4,12 @@ import { VSCodeLink } from "@vscode/webview-ui-toolkit/react"
 
 import {
 	type ProviderName,
-	type ApiConfiguration,
+	type ProviderSettings,
 	openRouterDefaultModelId,
 	requestyDefaultModelId,
 	glamaDefaultModelId,
 	unboundDefaultModelId,
+	litellmDefaultModelId,
 } from "@roo/shared/api"
 
 import { vscode } from "@src/utils/vscode"
@@ -27,6 +28,7 @@ import {
 	Glama,
 	Groq,
 	LMStudio,
+	LiteLLM,
 	Mistral,
 	Ollama,
 	OpenAI,
@@ -53,8 +55,8 @@ import { BedrockCustomArn } from "./providers/BedrockCustomArn"
 
 export interface ApiOptionsProps {
 	uriScheme: string | undefined
-	apiConfiguration: ApiConfiguration
-	setApiConfigurationField: <K extends keyof ApiConfiguration>(field: K, value: ApiConfiguration[K]) => void
+	apiConfiguration: ProviderSettings
+	setApiConfigurationField: <K extends keyof ProviderSettings>(field: K, value: ProviderSettings[K]) => void
 	fromWelcomeView?: boolean
 	errorMessage: string | undefined
 	setErrorMessage: React.Dispatch<React.SetStateAction<string | undefined>>
@@ -123,9 +125,9 @@ const ApiOptions = ({
 	const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
 
 	const handleInputChange = useCallback(
-		<K extends keyof ApiConfiguration, E>(
+		<K extends keyof ProviderSettings, E>(
 			field: K,
-			transform: (event: E) => ApiConfiguration[K] = inputEventTransform,
+			transform: (event: E) => ProviderSettings[K] = inputEventTransform,
 		) =>
 			(event: E | Event) => {
 				setApiConfigurationField(field, transform(event as E))
@@ -171,6 +173,8 @@ const ApiOptions = ({
 				vscode.postMessage({ type: "requestLmStudioModels", text: apiConfiguration?.lmStudioBaseUrl })
 			} else if (selectedProvider === "vscode-lm") {
 				vscode.postMessage({ type: "requestVsCodeLmModels" })
+			} else if (selectedProvider === "litellm") {
+				vscode.postMessage({ type: "requestRouterModels" })
 			}
 		},
 		250,
@@ -181,6 +185,8 @@ const ApiOptions = ({
 			apiConfiguration?.openAiApiKey,
 			apiConfiguration?.ollamaBaseUrl,
 			apiConfiguration?.lmStudioBaseUrl,
+			apiConfiguration?.litellmBaseUrl,
+			apiConfiguration?.litellmApiKey,
 			customHeaders,
 		],
 	)
@@ -233,6 +239,11 @@ const ApiOptions = ({
 						setApiConfigurationField("requestyModelId", requestyDefaultModelId)
 					}
 					break
+				case "litellm":
+					if (!apiConfiguration.litellmModelId) {
+						setApiConfigurationField("litellmModelId", litellmDefaultModelId)
+					}
+					break
 			}
 
 			setApiConfigurationField("apiProvider", value)
@@ -243,6 +254,7 @@ const ApiOptions = ({
 			apiConfiguration.glamaModelId,
 			apiConfiguration.unboundModelId,
 			apiConfiguration.requestyModelId,
+			apiConfiguration.litellmModelId,
 		],
 	)
 
@@ -393,6 +405,14 @@ const ApiOptions = ({
 
 			{selectedProvider === "chutes" && (
 				<Chutes apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
+			)}
+
+			{selectedProvider === "litellm" && (
+				<LiteLLM
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					routerModels={routerModels}
+				/>
 			)}
 
 			{selectedProvider === "human-relay" && (
