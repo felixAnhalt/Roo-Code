@@ -497,16 +497,18 @@ export class DiffViewProvider {
 					if (!previousEditor) {
 						return
 					}
-					// if there is, we need to focus it
-					this.showTextDocumentSafe({
-						textDocument: previousEditor.document,
-						options: {
-							preview: false,
-							preserveFocus: false,
-							selection: previousEditor.selection,
-							viewColumn: previousEditor.viewColumn,
-						},
-					})
+					// if this happens in a window different from the active one, we need to show the document
+					if (this.viewColumn !== ViewColumn.Active) {
+						this.showTextDocumentSafe({
+							textDocument: previousEditor.document,
+							options: {
+								preview: false,
+								preserveFocus: false,
+								selection: previousEditor.selection,
+								viewColumn: previousEditor.viewColumn,
+							},
+						})
+					}
 				})
 				.then(() => {
 					this.getEditorFromDiffTab(rightUri).then((editor) => {
