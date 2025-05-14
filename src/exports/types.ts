@@ -601,6 +601,8 @@ type IpcMessage =
 								includeMaxTokens?: boolean | undefined
 								reasoningEffort?: ("low" | "medium" | "high") | undefined
 								diffEnabled?: boolean | undefined
+								diffViewAutoFocus?: boolean | undefined
+								autoCloseRooTabs?: boolean | undefined
 								fuzzyMatchThreshold?: number | undefined
 								modelTemperature?: (number | null) | undefined
 								rateLimitSeconds?: number | undefined
@@ -1065,6 +1067,8 @@ type TaskCommand =
 					includeMaxTokens?: boolean | undefined
 					reasoningEffort?: ("low" | "medium" | "high") | undefined
 					diffEnabled?: boolean | undefined
+					diffViewAutoFocus?: boolean | undefined
+					autoCloseRooTabs?: boolean | undefined
 					fuzzyMatchThreshold?: number | undefined
 					modelTemperature?: (number | null) | undefined
 					rateLimitSeconds?: number | undefined
