@@ -394,7 +394,7 @@
 			},
 			"autoFocus": {
 				"label": "Diff-tabblad automatisch focussen bij het tonen van bestandswijzigingen",
-				"description": "Indien uitgeschakeld, wordt het diff-tabblad op de achtergrond geopend zonder de focus over te nemen."
+				"description": "Als deze optie is uitgeschakeld, wordt het diff-tabblad op de achtergrond geopend zonder de focus over te nemen. Dit geldt alleen als 'autoApprovalEnabled' en 'autoApprovalEnabled' zijn ingeschakeld."
 			},
 			"autoClose": {
 				"label": "Door Roo geopende tabbladen automatisch sluiten",

@@ -394,7 +394,7 @@
 			},
 			"autoFocus": {
 				"label": "Metti automaticamente a fuoco la scheda diff quando vengono mostrati cambiamenti ai file",
-				"description": "Se disabilitato, la scheda diff si aprirà in background senza prendere il focus."
+				"description": "Se questa opzione è disabilitata, la scheda diff si aprirà in background senza prendere il focus. Questo vale solo se 'autoApprovalEnabled' e 'autoApprovalEnabled' sono abilitati."
 			},
 			"autoClose": {
 				"label": "Chiudi automaticamente le schede Roo",

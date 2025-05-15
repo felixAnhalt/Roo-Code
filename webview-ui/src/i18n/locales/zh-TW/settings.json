@@ -394,7 +394,7 @@
 			},
 			"autoFocus": {
 				"label": "顯示檔案變更時自動聚焦差異分頁",
-				"description": "若停用，差異分頁將在背景開啟且不會搶奪焦點。"
+				"description": "若停用，差異分頁將在背景開啟且不會搶奪焦點。僅當 'autoApprovalEnabled' 和 'autoApprovalEnabled' 都啟用時才適用。"
 			},
 			"autoClose": {
 				"label": "自動關閉 Roo 開啟的分頁",

@@ -394,7 +394,7 @@
 			},
 			"autoFocus": {
 				"label": "Tự động chuyển tiêu điểm sang tab so sánh khi hiển thị thay đổi tệp",
-				"description": "Nếu tắt, tab so sánh sẽ mở ở chế độ nền và không chiếm tiêu điểm."
+				"description": "Nếu tùy chọn này bị tắt, tab so sánh sẽ mở ở chế độ nền và không chiếm tiêu điểm. Điều này chỉ áp dụng nếu cả hai tùy chọn 'autoApprovalEnabled' đều được bật."
 			},
 			"autoClose": {
 				"label": "Tự động đóng các tab Roo",

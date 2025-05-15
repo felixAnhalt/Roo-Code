@@ -394,7 +394,7 @@
 			},
 			"autoFocus": {
 				"label": "Enfocar automáticamente la pestaña de diferencias al mostrar cambios de archivos",
-				"description": "Si está desactivado, la pestaña de diferencias se abrirá en segundo plano y no tomará el foco."
+				"description": "Si está desactivado, la pestaña de diferencias se abrirá en segundo plano y no tomará el foco. Esto solo se aplica si 'autoApprovalEnabled' y 'autoApprovalEnabled' están activados."
 			},
 			"autoClose": {
 				"label": "Cerrar automáticamente las pestañas de Roo",

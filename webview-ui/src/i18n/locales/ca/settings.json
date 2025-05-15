@@ -394,7 +394,7 @@
 			},
 			"autoFocus": {
 				"label": "Enfoca automàticament la pestanya de diferències en mostrar canvis d'arxius",
-				"description": "Si està desactivat, la pestanya de diferències s'obrirà en segon pla i no prendrà el focus."
+				"description": "Si aquesta opció està desactivada, la pestanya de diferències s'obrirà en segon pla i no prendrà el focus. Això només s'aplica si 'autoApprovalEnabled' i 'autoApprovalEnabled' estan activats."
 			},
 			"autoClose": {
 				"label": "Tanca automàticament les pestanyes de Roo",

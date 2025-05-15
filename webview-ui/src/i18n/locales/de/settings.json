@@ -394,7 +394,7 @@
 			},
 			"autoFocus": {
 				"label": "Diff-Tab beim Anzeigen von Dateiänderungen automatisch fokussieren",
-				"description": "Wenn deaktiviert, wird der Diff-Tab im Hintergrund geöffnet und stiehlt nicht den Fokus."
+				"description": "Wenn diese Option deaktiviert ist, wird der Diff-Tab im Hintergrund geöffnet und stiehlt nicht den Fokus. Dies gilt nur, wenn sowohl 'autoApprovalEnabled' als auch 'autoApprovalEnabled' aktiviert sind."
 			},
 			"autoClose": {
 				"label": "Roo-Tabs automatisch schließen",

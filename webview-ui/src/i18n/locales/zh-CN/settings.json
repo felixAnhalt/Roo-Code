@@ -394,7 +394,7 @@
 			},
 			"autoFocus": {
 				"label": "在显示文件更改时自动聚焦差异标签页",
-				"description": "禁用后，差异标签页将在后台打开，不会抢占焦点。"
+				"description": "如果此选项被禁用，差异标签页将在后台打开，不会抢占焦点。仅当 'autoApprovalEnabled' 和 'autoApprovalEnabled' 都启用时才适用。"
 			},
 			"autoClose": {
 				"label": "自动关闭Roo打开的标签页",

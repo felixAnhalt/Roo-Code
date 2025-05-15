@@ -394,7 +394,7 @@
 			},
 			"autoFocus": {
 				"label": "Dosya değişiklikleri gösterildiğinde diff sekmesine otomatik odaklan",
-				"description": "Devre dışı bırakılırsa, diff sekmesi arka planda açılır ve odağı almaz."
+				"description": "Bu seçenek devre dışı bırakılırsa, diff sekmesi arka planda açılır ve odağı almaz. Bu yalnızca 'autoApprovalEnabled' ve 'autoApprovalEnabled' etkinse geçerlidir."
 			},
 			"autoClose": {
 				"label": "Roo'nun açtığı sekmeleri otomatik kapat",

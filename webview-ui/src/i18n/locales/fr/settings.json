@@ -394,7 +394,7 @@
 			},
 			"autoFocus": {
 				"label": "Mettre automatiquement le focus sur l'onglet de comparaison lors de l'affichage des modifications de fichiers",
-				"description": "Si désactivé, l'onglet de comparaison s'ouvrira en arrière-plan sans prendre le focus."
+				"description": "Si cette option est désactivée, l’onglet de comparaison s’ouvrira en arrière-plan sans prendre le focus. Ceci ne s’applique que si 'autoApprovalEnabled' et 'autoApprovalEnabled' sont activés."
 			},
 			"autoClose": {
 				"label": "Fermer automatiquement les onglets Roo",

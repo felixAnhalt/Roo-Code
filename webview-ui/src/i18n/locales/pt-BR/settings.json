@@ -394,7 +394,7 @@
 			},
 			"autoFocus": {
 				"label": "Focar automaticamente a aba de diferenças ao mostrar alterações de arquivos",
-				"description": "Se desativado, a aba de diferenças será aberta em segundo plano e não tomará o foco."
+				"description": "Se esta opção estiver desativada, a aba de diferenças será aberta em segundo plano e não tomará o foco. Isso só se aplica se 'autoApprovalEnabled' e 'autoApprovalEnabled' estiverem ativados."
 			},
 			"autoClose": {
 				"label": "Fechar automaticamente as abas do Roo",

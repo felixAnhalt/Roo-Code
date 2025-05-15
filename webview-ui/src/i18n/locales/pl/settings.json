@@ -394,7 +394,7 @@
 			},
 			"autoFocus": {
 				"label": "Automatycznie ustaw fokus na zakładce różnic przy wyświetlaniu zmian w plikach",
-				"description": "Jeśli wyłączone, zakładka różnic otworzy się w tle i nie przejmie fokusu."
+				"description": "Jeśli ta opcja jest wyłączona, zakładka różnic otworzy się w tle i nie przejmie fokusu. Dotyczy to tylko sytuacji, gdy 'autoApprovalEnabled' i 'autoApprovalEnabled' są włączone."
 			},
 			"autoClose": {
 				"label": "Automatycznie zamykaj karty Roo",
